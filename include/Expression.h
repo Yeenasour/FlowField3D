@@ -7,9 +7,8 @@ class Expression
 {
 private:
 	std::string expression;
-	bool ok;
 public:
-	Expression(std::string e);
+	Expression(const std::string &e);
 	~Expression();
 	float eval(float x, float y, float z);
 };

@@ -10,7 +10,7 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <Axes.h>
-#include <ExpressionParser.h>
+
 
 
 struct ApplicationData

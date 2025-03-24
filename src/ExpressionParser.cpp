@@ -54,18 +54,21 @@ std::string ExpressionParser::toPolish(std::string &expression)
 				out += os.top();
 				os.pop();
 			}
-			// Handle case with parenthesis missmatch (stack is empty)
+			if (os.empty())
+			{
+				throw std::invalid_argument("Invalid expression");
+			}
 			if (os.top() == '(') os.pop();
 		}
 		else
 		{
-			// Handle case with unknown token
-			// Idea ExpressionClass with error flag
+			throw std::invalid_argument("Invalid expression");
 		}
 	}
 	while (!os.empty())
 	{
-		// Handle case with parenthesis missmatch (found '(')
+		if (os.top() == '(')
+			throw std::invalid_argument("Invalid expression");
 		out += os.top();
 		os.pop();
 	}
@@ -101,4 +104,16 @@ int ExpressionParser::precedence(char op)
 bool ExpressionParser::isLeftAssociative(char op)
 {
     return (op == '+' || op == '-' || op == '*' || op == '/');
+}
+
+std::vector<Expression> ExpressionParser::getVectorFieldExpressions(std::string &fieldExpression)
+{
+	std::vector<Expression> out = std::vector<Expression>();
+	std::vector<std::string> expressions = split(fieldExpression);
+	for (auto &&expression : expressions)
+	{
+		std::string polishExpression = toPolish(expression);
+		out.emplace_back(polishExpression);
+	}
+	return out;
 }

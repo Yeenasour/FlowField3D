@@ -1,6 +1,6 @@
 #include <Expression.h>
 
-Expression::Expression(std::string e) : expression(e)
+Expression::Expression(const std::string &e) : expression(e)
 {
 
 }

@@ -10,7 +10,7 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <Axes.h>
-#include <VectorField.h>
+#include <VectorFieldRenderer.h>
 
 
 struct ApplicationData

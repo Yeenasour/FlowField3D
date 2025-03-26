@@ -115,6 +115,11 @@ int main()
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
 
+	// TODO Equation-class and Parser needs to be more flexible, should allow constants, lone "-" before variable, r as shortcut to distance to origin, empty defaults to 0
+	std::string fieldEquation = "x-x-y, x, z-z";
+	VectorField field = VectorField(fieldEquation);
+	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(field, 6, 5);
+
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
@@ -144,7 +149,9 @@ int main()
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			axes.Draw(appData.camera, program);			
+			axes.Draw(appData.camera, program);
+
+			fieldRenderer.Draw(appData.camera, program);
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

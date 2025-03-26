@@ -23,8 +23,15 @@ VectorField::~VectorField()
 
 glm::vec3 VectorField::evalAt(float x, float y, float z)
 {
-    float xVal = xe.eval(x, y, z);
-    float yVal = ye.eval(x, y, z);
-    float zVal = ze.eval(x, y, z);
-    return glm::vec3(xVal, yVal, zVal);
+	try
+	{
+		float xVal = xe.eval(x, y, z);
+    	float yVal = ye.eval(x, y, z);
+   		float zVal = ze.eval(x, y, z);
+		return glm::vec3(xVal, yVal, zVal);
+	}
+	catch(const std::exception& e)
+	{
+		return glm::vec3(0.0f);
+	}
 }

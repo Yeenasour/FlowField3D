@@ -11,6 +11,11 @@ Expression::~Expression()
 
 }
 
+void Expression::setExpression(const std::string &e)
+{
+	this->expression = e;
+}
+
 float Expression::eval(float x, float y, float z)
 {
 	constexpr int MAX_STACK_SIZE = 16;

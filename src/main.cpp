@@ -16,8 +16,10 @@
 struct ApplicationData
 {
 	Camera camera;
+	VectorField field;
 	double lastMouseX, lastMouseY;
 	bool mouseHeld = false;
+	bool newField = false;
 };
 
 
@@ -31,6 +33,7 @@ static void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 
 static void mouseButtonHandler(GLFWwindow *window, int button, int action, int mods)
 {
+	if (ImGui::GetIO().WantCaptureMouse) return;
 	ApplicationData *ad = (ApplicationData*)glfwGetWindowUserPointer(window);
 	ad->mouseHeld = (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT);
 	if (ad->mouseHeld)
@@ -64,9 +67,20 @@ static void keyHandler(GLFWwindow *window, int key, int scancode, int action, in
 	}
 }
 
+static int editCallback(ImGuiInputTextCallbackData* data)
+{
+	ApplicationData *ad = (ApplicationData*)glfwGetWindowUserPointer((GLFWwindow*)data->UserData);
+	std::string equation(data->Buf);
+	ad->field.setField(equation);
+	ad->newField = true;
+	return 0;
+}
+
 int main()
 {
 	GLFWwindow* window;
+
+	char buffer[128] = "x,x,x";
 
 	if (!glfwInit()) {
 		std::cout << "GLFW failed to initialize" << std::endl;
@@ -76,6 +90,11 @@ int main()
 	window = glfwCreateWindow(1080, 1080, "FlowField3D", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonHandler);
+	glfwSetCursorPosCallback(window, mouseMoveHandler);
+	glfwSetKeyCallback(window, keyHandler);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -92,11 +111,6 @@ int main()
 		return -1;
 	}
 
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetMouseButtonCallback(window, mouseButtonHandler);
-	glfwSetCursorPosCallback(window, mouseMoveHandler);
-	glfwSetKeyCallback(window, keyHandler);
-
 	Camera camera = Camera(
 		glm::vec3(2.5f, 2.5f, 5.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
@@ -104,7 +118,7 @@ int main()
 		{glm::radians(45.0f),(float)1080/(float)1080, 0.1f, 100.0f}
 	);
 
-	ApplicationData appData = {camera};
+	ApplicationData appData = {camera, VectorField("x,x,x")};
 
 	glfwSetWindowUserPointer(window, &appData);
 
@@ -115,10 +129,13 @@ int main()
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
 
-	// TODO Equation-class and Parser needs to be more flexible, should allow constants, lone "-" before variable, r as shortcut to distance to origin, empty defaults to 0
-	std::string fieldEquation = "x-x-y, x, z-z";
-	VectorField field = VectorField(fieldEquation);
-	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(field, 6, 5);
+	/* TODO EquationParser improvements
+		allow constants, needs rework in expressionclass to work with arrays/vectors instead of strings
+		allow - before a constant/variable
+		add r as substitution for distance to origin
+		incorrect always default to 0
+	*/
+	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 5);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -146,11 +163,18 @@ int main()
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
+			
+			ImGui::InputText("Equation", buffer, 128, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			axes.Draw(appData.camera, program);
 
+			if (appData.newField) 
+			{
+				fieldRenderer.updateBuffers();
+				appData.newField = false;
+			}
 			fieldRenderer.Draw(appData.camera, program);
 
 			ImGui::Render();

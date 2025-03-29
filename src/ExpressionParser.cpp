@@ -1,6 +1,6 @@
 #include <ExpressionParser.h>
 
-std::vector<std::string> ExpressionParser::split(std::string &fieldExpression)
+std::vector<std::string> ExpressionParser::split(const std::string &fieldExpression)
 {
 	std::vector<std::string> expressions = std::vector<std::string>();
 	unsigned int begin = 0;
@@ -23,7 +23,7 @@ std::vector<std::string> ExpressionParser::split(std::string &fieldExpression)
 	return expressions;
 }
 
-std::string ExpressionParser::toPolish(std::string &expression)
+std::string ExpressionParser::toPolish(const std::string &expression)
 {
 	std::string out = "";
 	std::stack<char> os = std::stack<char>();
@@ -106,7 +106,7 @@ bool ExpressionParser::isLeftAssociative(char op)
     return (op == '+' || op == '-' || op == '*' || op == '/');
 }
 
-std::vector<Expression> ExpressionParser::getVectorFieldExpressions(std::string &fieldExpression)
+std::vector<Expression> ExpressionParser::getVectorFieldExpressions(const std::string &fieldExpression)
 {
 	std::vector<Expression> out = std::vector<Expression>();
 	std::vector<std::string> expressions = split(fieldExpression);

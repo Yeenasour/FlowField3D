@@ -1,6 +1,6 @@
 #include <VectorFieldRenderer.h>
 
-VectorFieldRenderer::VectorFieldRenderer(const VectorField &field, int density, int segments) 
+VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, int segments) 
 	: vf(field), vectorDensity(density), segments(segments), numIndecies(2*(segments)*pow(density, 3))
 {
 	initBuffers();

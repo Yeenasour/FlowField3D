@@ -14,10 +14,10 @@ private:
 	static bool isOperator(char c);
 	static int precedence(char op);
 	static bool isLeftAssociative(char op);
-	static std::vector<std::string> split(std::string &fieldExpression);
-	static std::string toPolish(std::string &expression);
+	static std::vector<std::string> split(const std::string &fieldExpression);
+	static std::string toPolish(const std::string &expression);
 public:
-	static std::vector<Expression> getVectorFieldExpressions(std::string &fieldExpression);
+	static std::vector<Expression> getVectorFieldExpressions(const std::string &fieldExpression);
 };
 
 #endif

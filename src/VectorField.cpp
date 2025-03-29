@@ -1,6 +1,6 @@
 #include <VectorField.h>
 
-VectorField::VectorField(std::string &fieldExpression)
+VectorField::VectorField(const std::string &fieldExpression)
     : xe(""), ye(""), ze("")
 {
     try
@@ -19,6 +19,25 @@ VectorField::VectorField(std::string &fieldExpression)
 VectorField::~VectorField()
 {
 
+}
+
+void VectorField::setField(const std::string &fieldExpression)
+{
+	try
+    {
+        std::vector<Expression> expressions = ExpressionParser::getVectorFieldExpressions(fieldExpression);
+        if (expressions.size() == 3)
+        {
+            this->xe = expressions.at(0);
+            this->ye = expressions.at(1);
+            this->ze = expressions.at(2);
+        }
+    }
+    catch(const std::exception& e) {
+		this->xe.setExpression("");
+		this->ye.setExpression("");
+		this->ze.setExpression("");
+	}
 }
 
 glm::vec3 VectorField::evalAt(float x, float y, float z)

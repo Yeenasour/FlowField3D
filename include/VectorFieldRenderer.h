@@ -10,14 +10,14 @@
 class VectorFieldRenderer
 {
 private:
-    VectorField vf;
+    VectorField& vf;
     GLuint VAO, VBO, EBO;
 	int segments;
 	int vectorDensity;
 	int numIndecies;
 	void initBuffers();
 public:
-    VectorFieldRenderer(const VectorField &field, int segments, int density);
+    VectorFieldRenderer(VectorField &field, int segments, int density);
     ~VectorFieldRenderer();
 	void updateBuffers();
     void Draw(Camera &camera, Shader &shaderProgram);

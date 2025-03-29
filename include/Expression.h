@@ -10,6 +10,7 @@ private:
 public:
 	Expression(const std::string &e);
 	~Expression();
+	void setExpression(const std::string &e);
 	float eval(float x, float y, float z);
 };
 

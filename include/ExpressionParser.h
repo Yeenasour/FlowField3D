@@ -5,11 +5,13 @@
 #include <vector>
 #include <stack>
 #include <stdexcept>
-
+#include <cctype>
+#include <charconv>
 
 class ExpressionParser
 {
 private:
+	static bool isFunc(char c);
 	static bool isVar(char c);
 	static bool isOperator(char c);
 	static int precedence(char op);

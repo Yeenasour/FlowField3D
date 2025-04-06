@@ -17,7 +17,7 @@ private:
 	int numIndecies;
 	void initBuffers();
 public:
-    VectorFieldRenderer(VectorField &field, int segments, int density);
+    VectorFieldRenderer(VectorField &field, int density, int segments);
     ~VectorFieldRenderer();
 	void updateBuffers();
     void Draw(Camera &camera, Shader &shaderProgram);

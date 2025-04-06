@@ -112,19 +112,19 @@ int main()
 	}
 
 	Camera camera = Camera(
-		glm::vec3(2.5f, 2.5f, 5.0f),
+		glm::vec3(2.5f, 2.5f, 15.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		{glm::radians(45.0f),(float)1080/(float)1080, 0.1f, 100.0f}
 	);
 
-	ApplicationData appData = {camera, VectorField("x,x,x")};
+	ApplicationData appData = {camera, VectorField("2*x,x,x")};
 
 	glfwSetWindowUserPointer(window, &appData);
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	Axes axes = Axes(1.0f);
+	Axes axes = Axes(2.0f);
 
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
@@ -134,8 +134,9 @@ int main()
 		allow - before a constant/variable
 		add r as substitution for distance to origin
 		incorrect always default to 0
+		add ability to have functions in parser, s for sin etc.
 	*/
-	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 5);
+	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 2);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);

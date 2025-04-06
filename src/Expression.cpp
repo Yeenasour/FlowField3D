@@ -42,6 +42,11 @@ float Expression::eval(float x, float y, float z)
 			if (top == MAX_STACK_SIZE) throw std::runtime_error("Stack overflow");
 			res[top++] = val;
 		}
+		else if (c & 0x80)
+		{
+			if (top == MAX_STACK_SIZE) throw std::runtime_error("Stack overflow");
+			res[top++] = (c & 0x7F);
+		}
 		else
 		{
 			if (top < 2) throw std::runtime_error("Stack underflow");

@@ -50,7 +50,7 @@ void VectorFieldRenderer::updateBuffers()
 		for (int j = 0; j < (this->segments + 1); j++)
 		{
 			vertecies.push_back(vert);
-			glm::vec3 color = glm::vec3((1.0 - ((float)j / 5)));
+			glm::vec3 color = glm::vec3((1.0 - ((float)j / this->segments)));
 			vertecies.push_back(color);
 			vert = vert + 0.1f * (vf.evalAt(vert.x, vert.y, vert.z));
 		}

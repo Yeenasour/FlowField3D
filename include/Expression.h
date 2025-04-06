@@ -6,6 +6,8 @@
 class Expression
 {
 private:
+	/* constants in the expression are denoted by a character whose MSB == 1
+	*/
 	std::string expression;
 public:
 	Expression(const std::string &e);

@@ -1,24 +1,36 @@
 #include <ExpressionParser.h>
 
+
 std::vector<std::string> ExpressionParser::split(const std::string &fieldExpression)
 {
-	std::vector<std::string> expressions = std::vector<std::string>();
-	unsigned int begin = 0;
-	unsigned int end = 0;
-	int len = fieldExpression.length();
+	std::vector<std::string> expressions;
+	expressions.reserve(3);
+	unsigned int begin = 0, end = 0;
+	unsigned int len = fieldExpression.length();
 	while (begin < len && end < len)
 	{
 		while (end < len && fieldExpression.at(end) != ',') end++;
-		std::string expression = "";
-		for (size_t i = begin; i < end; i++)
+		std::string expression;
+		expression.reserve(len / 3);
+		std::string numBuff;
+		numBuff.reserve(3);
+		unsigned int i = begin;
+		while (i < end)
 		{
 			char c = fieldExpression.at(i);
+			if (std::isdigit(c)) {i++; continue;}
+			if (i != begin)
+			{
+				char val;
+				std::from_chars(fieldExpression.data() + begin, fieldExpression.data() + begin + i, val, 10);
+				val = (val & 0x7F) | 0x80;
+				expression += val;
+			}
 			if (c != ' ') expression += c;
+			begin = ++i;
 		}
-		if (!expression.empty())
-			expressions.push_back(expression);
-		end++;
-		begin = end;
+		if (!expression.empty()) expressions.push_back(expression);
+		begin = ++end;
 	}
 	return expressions;
 }
@@ -31,6 +43,10 @@ std::string ExpressionParser::toPolish(const std::string &expression)
 	{
 		char c = expression.at(i);
 		if (isVar(c))
+		{
+			out += c;
+		}
+		else if (c & 0x80)
 		{
 			out += c;
 		}
@@ -60,6 +76,10 @@ std::string ExpressionParser::toPolish(const std::string &expression)
 			}
 			if (os.top() == '(') os.pop();
 		}
+		else if (isFunc(c))
+		{
+			continue;
+		}
 		else
 		{
 			throw std::invalid_argument("Invalid expression");
@@ -73,6 +93,11 @@ std::string ExpressionParser::toPolish(const std::string &expression)
 		os.pop();
 	}
 	return out;
+}
+
+bool ExpressionParser::isFunc(char c)
+{
+	return false;
 }
 
 bool ExpressionParser::isVar(char c)

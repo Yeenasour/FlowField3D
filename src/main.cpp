@@ -118,7 +118,7 @@ int main()
 		{glm::radians(45.0f),(float)1080/(float)1080, 0.1f, 100.0f}
 	);
 
-	ApplicationData appData = {camera, VectorField("2*x,x,x")};
+	ApplicationData appData = {camera, VectorField("x,x,x")};
 
 	glfwSetWindowUserPointer(window, &appData);
 

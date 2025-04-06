@@ -1,5 +1,7 @@
 #include <Expression.h>
 #include <stdexcept>
+#include <glm/glm.hpp>
+
 
 Expression::Expression(const std::string &e) : expression(e)
 {
@@ -54,14 +56,16 @@ float Expression::eval(float x, float y, float z)
 			float a = res[--top];
 			switch (c)
 			{
-			case '+': res[top++] = a + b; break;
-			case '-': res[top++] = a - b; break;
-			case '*': res[top++] = a * b; break;
-			case '/':
-				if (b < 1e-6 && b > -1e-6) throw std::runtime_error("Division by zero");
-				res[top++] = a / b; break;
+				case '+': res[top++] = a + b; break;
+				case '-': res[top++] = a - b; break;
+				case '*': res[top++] = a * b; break;
+				case '/':
+					if (b < 1e-6 && b > -1e-6) throw std::runtime_error("Division by zero");
+					res[top++] = a / b; break;
+				case '^': res[top++] = glm::pow(a,b); break;
 			}
 		}
 	}
+	if (top != 1) throw std::runtime_error("Incorrect formating");
 	return res[0];
 }

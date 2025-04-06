@@ -1,11 +1,13 @@
 #ifndef FLOWFIELD_VECTORFIELD_RENDERER
 #define FLOWFIELD_VECTORFIELD_RENDERER
 
-#include <GL/glew.h>
-#include <VectorField.h>
 #include <glm/glm.hpp>
-#include <Camera.h>
-#include <Shader.h>
+
+
+typedef unsigned int GLuint;
+class VectorField;
+class Camera;
+class Shader;
 
 class VectorFieldRenderer
 {

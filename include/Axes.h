@@ -1,11 +1,12 @@
 #ifndef FLOWFIELD_AXES
 #define FLOWFIELD_AXES
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <Camera.h>
-#include <Shader.h>
+
+
+typedef unsigned int GLuint;
+class Camera;
+class Shader;
 
 class Axes
 {

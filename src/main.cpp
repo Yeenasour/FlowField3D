@@ -11,6 +11,7 @@
 #include <Camera.h>
 #include <Axes.h>
 #include <VectorFieldRenderer.h>
+#include <VectorField.h>
 
 
 struct ApplicationData

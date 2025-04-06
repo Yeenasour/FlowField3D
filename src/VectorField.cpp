@@ -1,4 +1,6 @@
 #include <VectorField.h>
+#include <ExpressionParser.h>
+
 
 VectorField::VectorField(const std::string &fieldExpression)
     : xe(""), ye(""), ze("")

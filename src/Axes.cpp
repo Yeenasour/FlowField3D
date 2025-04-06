@@ -1,5 +1,9 @@
 #include <Axes.h>
-#include <iostream>
+#include <Camera.h>
+#include <Shader.h>
+#include <GL/glew.h>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 Axes::Axes(float len) : length(len)
 {

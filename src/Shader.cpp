@@ -1,6 +1,7 @@
 #include <Shader.h>
 #include <FileUtils.h>
 
+
 Shader::Shader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 	GLuint program = glCreateProgram();

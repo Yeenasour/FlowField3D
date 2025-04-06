@@ -1,4 +1,10 @@
 #include <VectorFieldRenderer.h>
+#include <VectorField.h>
+#include <Camera.h>
+#include <Shader.h>
+#include <vector>
+#include <GL/glew.h>
+
 
 VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, int segments) 
 	: vf(field), vectorDensity(density), segments(segments), numIndecies(2*(segments)*pow(density, 3))

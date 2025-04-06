@@ -1,4 +1,8 @@
 #include <ExpressionParser.h>
+#include <Expression.h>
+#include <charconv>
+#include <stack>
+#include <stdexcept>
 
 
 std::vector<std::string> ExpressionParser::split(const std::string &fieldExpression)
@@ -21,18 +25,24 @@ std::vector<std::string> ExpressionParser::split(const std::string &fieldExpress
 			if (std::isdigit(c)) {i++; continue;}
 			if (i != begin)
 			{
-				char val;
-				std::from_chars(fieldExpression.data() + begin, fieldExpression.data() + begin + i, val, 10);
-				val = (val & 0x7F) | 0x80;
-				expression += val;
+				expression += encodeNumChar(fieldExpression, begin, begin + i);
 			}
 			if (c != ' ') expression += c;
 			begin = ++i;
 		}
+		if (begin != end) expression += encodeNumChar(fieldExpression, begin, end);
 		if (!expression.empty()) expressions.push_back(expression);
 		begin = ++end;
 	}
 	return expressions;
+}
+
+char ExpressionParser::encodeNumChar(const std::string &expression, int start, int end)
+{
+	char val;
+	std::from_chars(expression.data() + start, expression.data() + end, val, 10);
+	val = (val & 0x7F) | 0x80;
+	return val;
 }
 
 std::string ExpressionParser::toPolish(const std::string &expression)
@@ -75,10 +85,15 @@ std::string ExpressionParser::toPolish(const std::string &expression)
 				throw std::invalid_argument("Invalid expression");
 			}
 			if (os.top() == '(') os.pop();
+			if (isFunc(os.top()))
+			{
+				out += os.top();
+				os.pop();
+			}
 		}
 		else if (isFunc(c))
 		{
-			continue;
+			os.push(c);
 		}
 		else
 		{
@@ -97,7 +112,7 @@ std::string ExpressionParser::toPolish(const std::string &expression)
 
 bool ExpressionParser::isFunc(char c)
 {
-	return false;
+	return (c == 's' || c == 'c');
 }
 
 bool ExpressionParser::isVar(char c)

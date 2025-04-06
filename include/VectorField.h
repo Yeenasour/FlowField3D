@@ -2,8 +2,8 @@
 #define FLOWFIELD_VECTORFIELD
 
 #include <Expression.h>
-#include <ExpressionParser.h>
 #include <glm/glm.hpp>
+
 
 class VectorField
 {

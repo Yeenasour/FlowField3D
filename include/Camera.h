@@ -28,7 +28,7 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewProjectionMatrix;
 public:
-	Camera(glm::vec3 pos, glm::vec3 dir, glm::vec3 worldUp, ViewFrustum frustum);
+	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 worldUp, ViewFrustum frustum);
 	~Camera();
 	void lookAt(glm::vec3 target);
 	void setPos(glm::vec3 newPos);

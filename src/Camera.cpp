@@ -31,6 +31,7 @@ Camera::~Camera() {
 
 void Camera::lookAt(glm::vec3 target)
 {
+	this->target = target;
 	this->viewMatrix = glm::lookAt(pos, target, up);
 	this->viewProjectionMatrix = projectionMatrix * viewMatrix;
 }

@@ -166,7 +166,11 @@ int main()
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 			
+			ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
+			
 			ImGui::InputText("Equation", buffer, 128, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
+
+			ImGui::End();
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -177,6 +181,7 @@ int main()
 				fieldRenderer.updateBuffers();
 				appData.newField = false;
 			}
+			
 			fieldRenderer.Draw(appData.camera, program);
 
 			ImGui::Render();

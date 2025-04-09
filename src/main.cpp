@@ -8,11 +8,11 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <FileUtils.h>
 #include <Shader.h>
-//#include <Camera.h>
 #include <Axes.h>
 #include <VectorFieldRenderer.h>
 #include <VectorField.h>
 #include <OrbitalCamera.h>
+#include <FreeCamera.h>
 
 
 struct ApplicationData
@@ -24,6 +24,18 @@ struct ApplicationData
 	bool newField = false;
 };
 
+
+static unsigned int keyToIndex(int key)
+{
+	switch (key)
+	{
+		case GLFW_KEY_W: return 0;
+		case GLFW_KEY_A: return 1;
+		case GLFW_KEY_S: return 2;
+		case GLFW_KEY_D: return 3;
+		default: return -1;
+	}
+}
 
 static void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
@@ -52,7 +64,7 @@ static void mouseMoveHandler(GLFWwindow *window, double xPos, double yPos)
 	ApplicationData *ad = (ApplicationData*)glfwGetWindowUserPointer(window);
 	if (ad->mouseHeld)
 	{
-		constexpr float sensitivity = 0.005;
+		constexpr float sensitivity = 0.005f;
 		float dx = (ad->lastMouseX - xPos) * sensitivity;
 		float dy = (yPos - ad->lastMouseY) * sensitivity;
 		ad->camera->rotate(dy, dx);
@@ -61,12 +73,22 @@ static void mouseMoveHandler(GLFWwindow *window, double xPos, double yPos)
 	}
 }
 
+static void scrollHandler(GLFWwindow *window, double xOffset, double yOffset)
+{
+	// <0 out, >0 in
+	ApplicationData * ad = (ApplicationData*)glfwGetWindowUserPointer(window);
+	constexpr float zoomFactor = 0.1f;
+	yOffset = (-yOffset * zoomFactor) + 1;
+	ad->camera->zoom(yOffset);
+}
+
 static void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
+
 }
 
 static int editCallback(ImGuiInputTextCallbackData* data)
@@ -96,6 +118,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonHandler);
 	glfwSetCursorPosCallback(window, mouseMoveHandler);
+	glfwSetScrollCallback(window, scrollHandler);
 	glfwSetKeyCallback(window, keyHandler);
 
 	IMGUI_CHECKVERSION();
@@ -113,19 +136,22 @@ int main()
 		return -1;
 	}
 
-	//Camera camera = Camera(
-	//	glm::vec3(2.5f, 2.5f, 15.0f),
-	//	glm::vec3(0.0f, 0.0f, 0.0f),
-	//	glm::vec3(0.0f, 1.0f, 0.0f),
-	//	{glm::radians(45.0f),(float)1080/(float)1080, 0.1f, 100.0f}
-	//);
+	glm::vec3 camStartPos = glm::vec3(2.5f, 2.5f, 15.0f);
+	glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	OrbitalCamera orbitCam = OrbitalCamera(
-		glm::vec3(2.5f, 2.5f, 15.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f),
+		camStartPos,
+		target,
 		{glm::radians(45.0f), 1080.f/1080.f, 0.1f, 100.0f}
 	);
 
-	ApplicationData appData = {&orbitCam, VectorField("x,x,x")};
+	FreeCamera freeCam = FreeCamera(
+		camStartPos,
+		glm::normalize(target - camStartPos),
+		{glm::radians(45.0f), 1080.f/1080.f, 0.1f, 100.0f}
+	);
+
+	ApplicationData appData = {&freeCam, VectorField("x,x,x")};
 
 	glfwSetWindowUserPointer(window, &appData);
 
@@ -138,11 +164,13 @@ int main()
 
 	/* TODO EquationParser improvements
 		add r as substitution for distance to origin
-		add ability to have functions in parser, s for sin , c for cos etc.
 		Rework camera, have base camera, Orbital camera and free-cam
+		Add wasd-movement to freecam
 		Allocate both cameras on the heap, switch the active camera during runtime.
+		Create application-class
+		two empty parenthesis crash the application
 	*/
-	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 2);
+	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 5);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);

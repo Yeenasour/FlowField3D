@@ -27,6 +27,11 @@ void OrbitalCamera::setPos(const glm::vec3& position)
 	this->viewProjectionMatrix = projectionMatrix * viewMatrix;
 }
 
+void OrbitalCamera::move(const glm::vec3& velocity)
+{
+	return;
+}
+
 void OrbitalCamera::lookAt(const glm::vec3& target)
 {
 	this->dir = target;
@@ -42,6 +47,23 @@ void OrbitalCamera::rotate(float dp, float dy)
 	this->yaw += dy;
 
 	float r = glm::length(pos - dir);
+
+	pos.x = dir.x + r * cos(pitch) * sin(yaw);
+	pos.y = dir.y + r * sin(pitch);
+	pos.z = dir.z + r * cos(pitch) * cos(yaw);
+
+	this->viewMatrix = glm::lookAt(pos, dir, up);
+	this->viewProjectionMatrix = projectionMatrix * viewMatrix;
+}
+
+void OrbitalCamera::zoom(float zoomFactor)
+{
+	float r = glm::length(pos - dir);
+
+	if ((r < 1.0f && zoomFactor < 1.0f) || 
+		(r > 50.0f && zoomFactor > 1.0f)) return;
+
+	r *= zoomFactor;
 
 	pos.x = dir.x + r * cos(pitch) * sin(yaw);
 	pos.y = dir.y + r * sin(pitch);

@@ -1,5 +1,5 @@
-#ifndef FLOW_CAMERA
-#define FLOW_CAMERA
+#ifndef FLOWFIELD_CAMERA
+#define FLOWFIELD_CAMERA
 
 #include <glm/glm.hpp>
 
@@ -14,27 +14,24 @@ struct ViewFrustum
 
 class Camera
 {
-private:
-	bool targetLock;
-	float yaw;
+protected:
 	float pitch;
+	float yaw;
 	glm::vec3 pos;
 	glm::vec3 dir;
 	glm::vec3 up;
-	glm::vec3 right;
-	glm::vec3 target;
-	ViewFrustum frustum;
+	ViewFrustum vf;
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewProjectionMatrix;
+	void updateMatricies();
 public:
-	Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 worldUp, ViewFrustum frustum);
-	~Camera();
-	void lookAt(glm::vec3 target);
-	void setPos(glm::vec3 newPos);
-	void rotate(float dp, float dy);
+	virtual ~Camera() {};
+	virtual void setPos(const glm::vec3& pos) = 0;
+	virtual void lookAt(const glm::vec3& target) = 0;
+	virtual void rotate(float dp, float dy) = 0;
 	void setAspectRatio(float ratio);
-	glm::mat4 getViewProjectionMatrix();
+	glm::mat4 getViewProjectionMatrix() const;
 };
 
 #endif

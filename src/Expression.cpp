@@ -49,6 +49,16 @@ float Expression::eval(float x, float y, float z)
 			if (top == MAX_STACK_SIZE) throw std::runtime_error("Stack overflow");
 			res[top++] = (c & 0x7F);
 		}
+		else if (c == 's' || c == 'c')
+		{
+			if (top < 1) throw std::runtime_error("Stack underflow");
+			float a = res[--top];
+			switch (c)
+			{
+				case 's': res[top++] = glm::sin(a); break;
+				case 'c': res[top++] = glm::cos(a); break;
+			}
+		}
 		else
 		{
 			if (top < 2) throw std::runtime_error("Stack underflow");

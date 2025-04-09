@@ -8,15 +8,16 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <FileUtils.h>
 #include <Shader.h>
-#include <Camera.h>
+//#include <Camera.h>
 #include <Axes.h>
 #include <VectorFieldRenderer.h>
 #include <VectorField.h>
+#include <OrbitalCamera.h>
 
 
 struct ApplicationData
 {
-	Camera camera;
+	Camera* camera;
 	VectorField field;
 	double lastMouseX, lastMouseY;
 	bool mouseHeld = false;
@@ -29,7 +30,7 @@ static void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 	ApplicationData *ad = (ApplicationData*)glfwGetWindowUserPointer(window);
     glViewport(0, 0, width, height);
 
-    ad->camera.setAspectRatio((float)width/(float)height);
+    ad->camera->setAspectRatio((float)width/(float)height);
 }
 
 static void mouseButtonHandler(GLFWwindow *window, int button, int action, int mods)
@@ -54,7 +55,7 @@ static void mouseMoveHandler(GLFWwindow *window, double xPos, double yPos)
 		constexpr float sensitivity = 0.005;
 		float dx = (ad->lastMouseX - xPos) * sensitivity;
 		float dy = (yPos - ad->lastMouseY) * sensitivity;
-		ad->camera.rotate(dy, dx);
+		ad->camera->rotate(dy, dx);
 		ad->lastMouseX = xPos;
 		ad->lastMouseY = yPos;
 	}
@@ -81,7 +82,7 @@ int main()
 {
 	GLFWwindow* window;
 
-	char buffer[128] = "x,x,x";
+	static char buffer[256] = "x,x,x";
 
 	if (!glfwInit()) {
 		std::cout << "GLFW failed to initialize" << std::endl;
@@ -112,14 +113,19 @@ int main()
 		return -1;
 	}
 
-	Camera camera = Camera(
+	//Camera camera = Camera(
+	//	glm::vec3(2.5f, 2.5f, 15.0f),
+	//	glm::vec3(0.0f, 0.0f, 0.0f),
+	//	glm::vec3(0.0f, 1.0f, 0.0f),
+	//	{glm::radians(45.0f),(float)1080/(float)1080, 0.1f, 100.0f}
+	//);
+	OrbitalCamera orbitCam = OrbitalCamera(
 		glm::vec3(2.5f, 2.5f, 15.0f),
 		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		{glm::radians(45.0f),(float)1080/(float)1080, 0.1f, 100.0f}
+		{glm::radians(45.0f), 1080.f/1080.f, 0.1f, 100.0f}
 	);
 
-	ApplicationData appData = {camera, VectorField("x,x,x")};
+	ApplicationData appData = {&orbitCam, VectorField("x,x,x")};
 
 	glfwSetWindowUserPointer(window, &appData);
 
@@ -131,11 +137,10 @@ int main()
 	program.use();
 
 	/* TODO EquationParser improvements
-		allow constants, needs rework in expressionclass to work with arrays/vectors instead of strings
-		allow - before a constant/variable
 		add r as substitution for distance to origin
-		incorrect always default to 0
-		add ability to have functions in parser, s for sin etc.
+		add ability to have functions in parser, s for sin , c for cos etc.
+		Rework camera, have base camera, Orbital camera and free-cam
+		Allocate both cameras on the heap, switch the active camera during runtime.
 	*/
 	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 2);
 
@@ -166,15 +171,16 @@ int main()
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 			
+			ImGui::SetNextWindowSize(ImVec2(300, 100));
 			ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
 			
-			ImGui::InputText("Equation", buffer, 128, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
+			ImGui::InputText("Equation", buffer, 256, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
 
 			ImGui::End();
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			axes.Draw(appData.camera, program);
+			axes.Draw(*appData.camera, program);
 
 			if (appData.newField) 
 			{
@@ -182,7 +188,7 @@ int main()
 				appData.newField = false;
 			}
 			
-			fieldRenderer.Draw(appData.camera, program);
+			fieldRenderer.Draw(*appData.camera, program);
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

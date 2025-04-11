@@ -26,19 +26,19 @@ float Expression::eval(float x, float y, float z)
 	int top = 0;
 	for (auto &&c : this->expression)
 	{
-		if (c == 'x' || c == 'y' || c == 'z')
+		if (c == 'x' || c == 'y' || c == 'z' || c == 'r' || c == 'R')
 		{
 			float val;
 			switch (c)
 			{
-			case 'x':
-				val = x;
+			case 'x': val = x; break;
+			case 'y': val = y; break;
+			case 'z': val = z; break;
+			case 'r':
+				val = glm::sqrt(x*x + y*y + z*z);
 				break;
-			case 'y':
-				val = y;
-				break;
-			case 'z':
-				val = z;
+			case 'R':
+				val = x*x + y*y + z*z;
 				break;
 			}
 			if (top == MAX_STACK_SIZE) throw std::runtime_error("Stack overflow");

@@ -85,7 +85,7 @@ std::string ExpressionParser::toPolish(const std::string &expression)
 				throw std::invalid_argument("Invalid expression");
 			}
 			if (os.top() == '(') os.pop();
-			if (isFunc(os.top()))
+			if (!os.empty() && isFunc(os.top()))
 			{
 				out += os.top();
 				os.pop();
@@ -117,7 +117,7 @@ bool ExpressionParser::isFunc(char c)
 
 bool ExpressionParser::isVar(char c)
 {
-	return (c == 'x' || c == 'y' || c == 'z');
+	return (c == 'x' || c == 'y' || c == 'z' || c == 'r' || c == 'R');
 }
 
 bool ExpressionParser::isOperator(char c)

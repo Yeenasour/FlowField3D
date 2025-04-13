@@ -6,8 +6,8 @@
 #include <GL/glew.h>
 
 
-VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, int segments) 
-	: vf(field), vectorDensity(density), segments(segments), numIndecies(2*(segments)*pow(density, 3))
+VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, float range, int segments) 
+	: vf(field), vectorDensity(density), drawingRange(range), segments(segments), numIndecies(2*(segments)*pow(density, 3))
 {
 	initBuffers();
 }
@@ -35,15 +35,16 @@ void VectorFieldRenderer::updateBuffers()
 	int totalVerts = vecNum*2*(this->segments + 1);
 	std::vector<glm::vec3> basePoints;
 	basePoints.reserve(vecNum);
+	float halfRange = drawingRange / 2;
 	for (int i = 0; i < vectorDensity; i++)
 	{
 		for (int j = 0; j < vectorDensity; j++)
 		{
 			for (int k = 0; k < vectorDensity; k++)
 			{
-				float x = -1.0f + i * (2.0f / (vectorDensity - 1));
-				float y = -1.0f + j * (2.0f / (vectorDensity - 1));
-				float z = -1.0f + k * (2.0f / (vectorDensity - 1));
+				float x = -halfRange + i * (drawingRange / (vectorDensity - 1));
+				float y = -halfRange + j * (drawingRange / (vectorDensity - 1));
+				float z = -halfRange + k * (drawingRange / (vectorDensity - 1));
 				basePoints.emplace_back(x, y, z);
 			}
 		}

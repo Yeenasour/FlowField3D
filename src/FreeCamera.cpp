@@ -27,7 +27,13 @@ void FreeCamera::setPos(const glm::vec3& position)
 
 void FreeCamera::move(const glm::vec3& velocity)
 {
-	this->pos += velocity;
+	this->pos += velocity * glm::mat3(viewMatrix);
+	//glm::vec3 forward = glm::normalize(dir);
+    //glm::vec3 right = glm::normalize(glm::cross(forward, up));
+    //glm::vec3 upCorrected = glm::normalize(glm::cross(right, forward));
+    //pos += velocity.x * right +
+    //       velocity.y * upCorrected +
+    //       velocity.z * -forward;
 	this->viewMatrix = glm::lookAt(pos, pos + dir, up);
 	this->viewProjectionMatrix = projectionMatrix * viewMatrix;
 }

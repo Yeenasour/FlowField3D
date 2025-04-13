@@ -16,10 +16,11 @@ private:
     GLuint VAO, VBO, EBO;
 	int segments;
 	int vectorDensity;
+	float drawingRange;
 	int numIndecies;
 	void initBuffers();
 public:
-    VectorFieldRenderer(VectorField &field, int density, int segments);
+    VectorFieldRenderer(VectorField &field, int density, float range, int segments);
     ~VectorFieldRenderer();
 	void updateBuffers();
     void Draw(Camera &camera, Shader &shaderProgram);

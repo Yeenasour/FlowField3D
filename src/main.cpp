@@ -22,10 +22,11 @@ struct ApplicationData
 	double lastMouseX, lastMouseY;
 	bool mouseHeld = false;
 	bool newField = false;
+	bool keyStatus[6];
 };
 
 
-static unsigned int keyToIndex(int key)
+static int keyToIndex(int key)
 {
 	switch (key)
 	{
@@ -33,6 +34,8 @@ static unsigned int keyToIndex(int key)
 		case GLFW_KEY_A: return 1;
 		case GLFW_KEY_S: return 2;
 		case GLFW_KEY_D: return 3;
+		case GLFW_KEY_SPACE: return 4;
+		case GLFW_KEY_LEFT_CONTROL: return 5;
 		default: return -1;
 	}
 }
@@ -84,11 +87,26 @@ static void scrollHandler(GLFWwindow *window, double xOffset, double yOffset)
 
 static void keyHandler(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+	ApplicationData *ad = (ApplicationData*)glfwGetWindowUserPointer(window);
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+		return;
 	}
+	int keyIndex = keyToIndex(key);
+	if (keyIndex == -1 || action == GLFW_REPEAT) return;
+	ad->keyStatus[keyIndex] = (action == GLFW_PRESS);
+}
 
+static void update(ApplicationData* ad, double dt)
+{
+	constexpr static float movementSpeed = 0.02f;
+	if (ImGui::IsAnyItemActive()) return;
+	double dx = (ad->keyStatus[3] - ad->keyStatus[1]);
+	double dy = (ad->keyStatus[4] - ad->keyStatus[5]);
+	double dz = (ad->keyStatus[2] - ad->keyStatus[0]);
+	glm::vec3 delta = glm::vec3(dx, dy, dz) * movementSpeed * (float)dt;
+	ad->camera->move(delta);
 }
 
 static int editCallback(ImGuiInputTextCallbackData* data)
@@ -152,12 +170,17 @@ int main()
 	);
 
 	ApplicationData appData = {&freeCam, VectorField("x,x,x")};
+	for (int i = 0; i < 6; i++)
+	{
+		appData.keyStatus[i] = false;
+	}
+	
 
 	glfwSetWindowUserPointer(window, &appData);
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	Axes axes = Axes(2.0f);
+	Axes axes = Axes(5.0f);
 
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
@@ -170,7 +193,7 @@ int main()
 		Create application-class
 		two empty parenthesis crash the application
 	*/
-	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 5);
+	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 10, 5);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -194,6 +217,8 @@ int main()
 		double currentTime = glfwGetTime();
 		double deltaDrawTime = currentTime - lastDrawTime;
 
+		update(&appData, deltaDrawTime);
+
 		if (deltaDrawTime > targetFrameTime) {
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -201,6 +226,13 @@ int main()
 			
 			ImGui::SetNextWindowSize(ImVec2(300, 100));
 			ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
+
+			ImGui::BeginGroup();
+			ImGui::Text("Camera-Type");
+			if (ImGui::Button("Free-Cam")) appData.camera = &freeCam;
+			ImGui::SameLine();
+			if (ImGui::Button("Orbital-Cam")) appData.camera = &orbitCam;
+			ImGui::EndGroup();
 			
 			ImGui::InputText("Equation", buffer, 256, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
 

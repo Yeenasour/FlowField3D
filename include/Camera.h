@@ -34,6 +34,8 @@ public:
 	virtual void zoom(float zoomFactor) = 0;
 	void setAspectRatio(float ratio);
 	glm::mat4 getViewProjectionMatrix() const;
+	glm::mat4 getViewMatrix() const;
+	glm::mat4 getProjectionMatrix() const;
 };
 
 #endif

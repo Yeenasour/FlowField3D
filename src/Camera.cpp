@@ -19,3 +19,13 @@ glm::mat4 Camera::getViewProjectionMatrix() const
 {
 	return viewProjectionMatrix;
 }
+
+glm::mat4 Camera::getViewMatrix() const
+{
+	return viewMatrix;
+}
+
+glm::mat4 Camera::getProjectionMatrix() const
+{
+	return projectionMatrix;
+}

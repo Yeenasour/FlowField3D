@@ -18,7 +18,7 @@ void Expression::setExpression(const std::string &e)
 	this->expression = e;
 }
 
-float Expression::eval(float x, float y, float z)
+float Expression::eval(float x, float y, float z) const
 {
 	constexpr int MAX_STACK_SIZE = 16;
 	if (this->expression == "") return 0;

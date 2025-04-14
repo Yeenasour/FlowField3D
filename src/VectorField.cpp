@@ -42,7 +42,7 @@ void VectorField::setField(const std::string &fieldExpression)
 	}
 }
 
-glm::vec3 VectorField::evalAt(float x, float y, float z)
+glm::vec3 VectorField::evalAt(float x, float y, float z) const
 {
 	try
 	{

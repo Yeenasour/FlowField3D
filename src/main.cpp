@@ -13,6 +13,7 @@
 #include <VectorField.h>
 #include <OrbitalCamera.h>
 #include <FreeCamera.h>
+#include <ParticleSystem.h>
 
 
 struct ApplicationData
@@ -100,7 +101,7 @@ static void keyHandler(GLFWwindow *window, int key, int scancode, int action, in
 
 static void update(ApplicationData* ad, double dt)
 {
-	constexpr static float movementSpeed = 0.02f;
+	constexpr static float movementSpeed = 5.0f;
 	if (ImGui::IsAnyItemActive()) return;
 	double dx = (ad->keyStatus[3] - ad->keyStatus[1]);
 	double dy = (ad->keyStatus[4] - ad->keyStatus[5]);
@@ -185,18 +186,20 @@ int main()
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
 
-	/* TODO EquationParser improvements
-		add r as substitution for distance to origin
-		Rework camera, have base camera, Orbital camera and free-cam
-		Add wasd-movement to freecam
-		Allocate both cameras on the heap, switch the active camera during runtime.
+	/* TODO
 		Create application-class
-		two empty parenthesis crash the application
+		add ability to choose between affecting velocity or position in particle update
+		Improve particle shader.
 	*/
 	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 10, 5);
 
+	ParticleSystem particles = ParticleSystem();
+	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");
+
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	int maxFPS;
 	
@@ -209,15 +212,18 @@ int main()
 	int targetFPS = maxFPS;
 	float targetFrameTime = 1.0f / targetFPS;
 	double lastDrawTime = glfwGetTime();
+	double lastTime = glfwGetTime();
 
 	while (!glfwWindowShouldClose(window)) 
 	{
 		glfwPollEvents();
 
 		double currentTime = glfwGetTime();
+		double deltaTime = currentTime - lastTime;
 		double deltaDrawTime = currentTime - lastDrawTime;
 
-		update(&appData, deltaDrawTime);
+		update(&appData, deltaTime);
+		particles.update(appData.field, deltaTime);
 
 		if (deltaDrawTime > targetFrameTime) {
 			ImGui_ImplOpenGL3_NewFrame();
@@ -250,12 +256,17 @@ int main()
 			
 			fieldRenderer.Draw(*appData.camera, program);
 
+			glDepthMask(GL_FALSE);
+			particles.Draw(*appData.camera, particleProgram);
+			glDepthMask(GL_TRUE);
+
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			glfwSwapBuffers(window);
 			lastDrawTime = currentTime;
 		}
+		lastTime = currentTime;
 	}
 	
 	ImGui_ImplOpenGL3_Shutdown();

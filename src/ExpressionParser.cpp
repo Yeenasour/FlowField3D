@@ -28,7 +28,7 @@ std::vector<std::string> ExpressionParser::split(const std::string &fieldExpress
 				expression += encodeNumChar(fieldExpression, begin, begin + i);
 			}
 			char back = expression.back();
-			if (isNumEncoded(back) || isVar(back)) expression += '*';
+			if ((isNumEncoded(back) || isVar(back)) && isVar(c)) expression += '*';
 			if (c == '-' && expression.size() == 0) expression += (char) 0x80;
 			if (c != ' ') expression += c;
 			begin = ++i;

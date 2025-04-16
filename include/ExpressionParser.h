@@ -18,6 +18,7 @@ private:
 	static std::vector<std::string> split(const std::string &fieldExpression);
 	static std::string toPolish(const std::string &expression);
 	static char encodeNumChar(const std::string &expression, int start, int end);
+	static bool isNumEncoded(char c);
 public:
 	static std::vector<Expression> getVectorFieldExpressions(const std::string &fieldExpression);
 };

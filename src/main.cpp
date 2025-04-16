@@ -190,6 +190,9 @@ int main()
 		Create application-class
 		add ability to choose between affecting velocity or position in particle update
 		Improve particle shader.
+		Fix that trailing functions work, computes when there is no argument
+		A negative-sign at the beginning should work
+		insert '*' when a variable follows a number???
 	*/
 	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 10, 5);
 

@@ -188,9 +188,7 @@ int main()
 
 	/* TODO
 		Create application-class
-		add ability to choose between affecting velocity or position in particle update
 		Improve particle shader.
-		Fix that trailing functions work, computes when there is no argument
 	*/
 	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 10, 5);
 

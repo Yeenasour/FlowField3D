@@ -1,5 +1,6 @@
 #include <VectorField.h>
 #include <ExpressionParser.h>
+#include <stdexcept>
 
 
 VectorField::VectorField(const std::string &fieldExpression)
@@ -28,12 +29,10 @@ void VectorField::setField(const std::string &fieldExpression)
 	try
     {
         std::vector<Expression> expressions = ExpressionParser::getVectorFieldExpressions(fieldExpression);
-        if (expressions.size() == 3)
-        {
-            this->xe = expressions.at(0);
-            this->ye = expressions.at(1);
-            this->ze = expressions.at(2);
-        }
+        if (expressions.size() != 3) throw std::runtime_error("Not correct number of valid expressions");
+        this->xe = expressions.at(0);
+        this->ye = expressions.at(1);
+        this->ze = expressions.at(2);
     }
     catch(const std::exception& e) {
 		this->xe.setExpression("");

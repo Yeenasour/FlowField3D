@@ -91,7 +91,8 @@ void ParticleSystem::update(const VectorField& field, float dt)
 
 		glm::vec3 force = field.evalAt(p.pos.x, p.pos.y, p.pos.z);
 		
-		p.vel += force * dt;
+		float t = 0.5f * dt;
+		p.vel = p.vel * (1 - t) + force * t;
 		p.pos += p.vel * dt;
 
 		p.lifetime -= dt;

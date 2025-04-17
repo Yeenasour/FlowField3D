@@ -189,10 +189,12 @@ int main()
 	/* TODO
 		Create application-class
 		Improve particle shader.
+		Grabbing the window freezes the application, causes particles to sync up in lifetime
 	*/
+
 	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 10, 5);
 
-	ParticleSystem particles = ParticleSystem();
+	ParticleSystem particles = ParticleSystem(100);
 	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");
 
 	glEnable(GL_CULL_FACE);

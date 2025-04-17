@@ -20,13 +20,14 @@ struct Particle
 class ParticleSystem
 {
 private:
+	int n;
 	GLuint VAO, quadVBO, instanceVBO;
 	std::vector<Particle> particles;
 	float randf();
 	glm::vec3 generateRandomPosition();
 	void initParticles();
 public:
-	ParticleSystem();
+	ParticleSystem(int n);
 	~ParticleSystem();
 	void update(const VectorField& field, float dt);
 	void Draw(Camera &camera, Shader &shaderProgram);

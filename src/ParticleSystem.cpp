@@ -7,7 +7,8 @@
 #include <Camera.h>
 
 
-ParticleSystem::ParticleSystem()
+ParticleSystem::ParticleSystem(int n)
+	: n(n)
 {
 	initParticles();
 
@@ -15,10 +16,10 @@ ParticleSystem::ParticleSystem()
 	glBindVertexArray(VAO);
 	
 	const float quad[] = {
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		-0.5f,  0.5f,
-		 0.5f,  0.5f,
+		-1.0f, -1.0f,
+		 1.0f, -1.0f,
+		-1.0f,  1.0f,
+		 1.0f,  1.0f,
 	};
 
 	glGenBuffers(1, &quadVBO);
@@ -51,12 +52,12 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::initParticles()
 {
 	std::srand(std::time({}));
-	this->particles.reserve(100);
-	for (int i = 0; i < 100; i++)
+	this->particles.reserve(n);
+	for (int i = 0; i < n; i++)
 	{
 		glm::vec3 pos = generateRandomPosition();
 		glm::vec3 vel = glm::vec3(0.0f);
-		float lifetime = ((float)i / (float)50);
+		float lifetime = ((float)i / (float)(n * 0.5));
 		particles.push_back({pos, vel, lifetime});
 	}
 }
@@ -109,10 +110,11 @@ void ParticleSystem::Draw(Camera &camera, Shader &shaderProgram)
 	glm::mat4 V = camera.getViewMatrix();
 	glm::mat4 P = camera.getProjectionMatrix();
 
+	shaderProgram.setUniform1f("particleSize", 0.1f);
 	shaderProgram.setUniform4fv("viewMatrix", &V[0][0]);
 	shaderProgram.setUniform4fv("projectionMatrix", &P[0][0]);
 
 	glBindVertexArray(VAO);
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 100);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, n);
 	glBindVertexArray(0);
 }

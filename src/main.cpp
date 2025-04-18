@@ -139,6 +139,7 @@ int main()
 	glfwSetCursorPosCallback(window, mouseMoveHandler);
 	glfwSetScrollCallback(window, scrollHandler);
 	glfwSetKeyCallback(window, keyHandler);
+	glfwSwapInterval(1);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -212,7 +213,6 @@ int main()
 
 	int targetFPS = maxFPS;
 	float targetFrameTime = 1.0f / targetFPS;
-	double lastDrawTime = glfwGetTime();
 	double lastTime = glfwGetTime();
 
 	while (!glfwWindowShouldClose(window)) 
@@ -221,52 +221,49 @@ int main()
 
 		double currentTime = glfwGetTime();
 		double deltaTime = currentTime - lastTime;
-		double deltaDrawTime = currentTime - lastDrawTime;
 
 		update(&appData, deltaTime);
 		particles.update(appData.field, deltaTime);
 
-		if (deltaDrawTime > targetFrameTime) {
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-			
-			ImGui::SetNextWindowSize(ImVec2(300, 100));
-			ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		
+		ImGui::SetNextWindowSize(ImVec2(300, 100));
+		ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
 
-			ImGui::BeginGroup();
-			ImGui::Text("Camera-Type");
-			if (ImGui::Button("Free-Cam")) appData.camera = &freeCam;
-			ImGui::SameLine();
-			if (ImGui::Button("Orbital-Cam")) appData.camera = &orbitCam;
-			ImGui::EndGroup();
-			
-			ImGui::InputText("Equation", buffer, 256, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
+		ImGui::BeginGroup();
+		ImGui::Text("Camera-Type");
+		if (ImGui::Button("Free-Cam")) appData.camera = &freeCam;
+		ImGui::SameLine();
+		if (ImGui::Button("Orbital-Cam")) appData.camera = &orbitCam;
+		ImGui::EndGroup();
+		
+		ImGui::InputText("Equation", buffer, 256, ImGuiInputTextFlags_CallbackEdit, editCallback, (void*)window);
 
-			ImGui::End();
+		ImGui::End();
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			axes.Draw(*appData.camera, program);
+		axes.Draw(*appData.camera, program);
 
-			if (appData.newField) 
-			{
-				fieldRenderer.updateBuffers();
-				appData.newField = false;
-			}
-			
-			fieldRenderer.Draw(*appData.camera, program);
-
-			glDepthMask(GL_FALSE);
-			particles.Draw(*appData.camera, particleProgram);
-			glDepthMask(GL_TRUE);
-
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			glfwSwapBuffers(window);
-			lastDrawTime = currentTime;
+		if (appData.newField) 
+		{
+			fieldRenderer.updateBuffers();
+			appData.newField = false;
 		}
+		
+		fieldRenderer.Draw(*appData.camera, program);
+
+		glDepthMask(GL_FALSE);
+		particles.Draw(*appData.camera, particleProgram);
+		glDepthMask(GL_TRUE);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		glfwSwapBuffers(window);
+		
 		lastTime = currentTime;
 	}
 	

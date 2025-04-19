@@ -187,12 +187,6 @@ int main()
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
 
-	/* TODO
-		Create application-class
-		Improve particle shader.
-		Grabbing the window freezes the application, causes particles to sync up in lifetime
-	*/
-
 	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(appData.field, 6, 10, 5);
 
 	ParticleSystem particles = ParticleSystem(100);

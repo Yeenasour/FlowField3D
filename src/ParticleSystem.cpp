@@ -38,7 +38,7 @@ ParticleSystem::ParticleSystem(int n)
 	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(offsetof(Particle, lifetime)));
 	glEnableVertexAttribArray(2);
 	glVertexAttribDivisor(2, 1);
-
+	
 	glBindVertexArray(0);
 }
 

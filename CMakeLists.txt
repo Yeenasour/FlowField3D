@@ -52,7 +52,7 @@ file(GLOB IMGUI_SOURCES
 	"include/imgui/backends/imgui_impl_glfw.cpp" 
 	"include/imgui/backends/imgui_impl_opengl3.cpp")
 
-file(GLOB SOURCES "*.cpp" "src/*.cpp")
+file(GLOB SOURCES "*.cpp" "src/*.cpp" "src/Engine/*.cpp")
 
 add_executable(FlowField3D ${SOURCES} ${IMGUI_SOURCES})
 

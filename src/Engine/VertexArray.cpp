@@ -1,4 +1,5 @@
-#include <VertexArray.h>
+#include <Engine/VertexArray.h>
+#include <Engine/Buffer.h>
 #include <GL/glew.h>
 
 
@@ -40,4 +41,28 @@ void VertexArray::disableAttribPointer(int index) const
 void VertexArray::setAttribDivisor(int index, GLuint divisor) const
 {
 	glVertexAttribDivisor(index, divisor);
+}
+
+void VertexArray::setVBO(VertexBuffer* vertexBuffer)
+{
+	glBindVertexArray(handle);
+	vertexBuffer->bind();
+	VBO = vertexBuffer;
+}
+
+void VertexArray::setEBO(IndexBuffer* indexBuffer)
+{
+	glBindVertexArray(handle);
+	indexBuffer->bind();
+	EBO = indexBuffer;
+}
+
+VertexBuffer* VertexArray::getVBO() const
+{
+	return this->VBO;
+}
+
+IndexBuffer* VertexArray::getEBO() const
+{
+	return this->EBO;
 }

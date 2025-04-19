@@ -8,10 +8,15 @@ typedef unsigned int GLenum;
 typedef int GLint;
 typedef int GLsizei;
 
+class VertexBuffer;
+class IndexBuffer;
+
 class VertexArray
 {
 private:
 	GLuint handle;
+	VertexBuffer* VBO;
+	IndexBuffer* EBO;
 public:
 	VertexArray();
 	~VertexArray();
@@ -21,6 +26,10 @@ public:
 	void enableAttribPointer(int index) const;
 	void disableAttribPointer(int index) const;
 	void setAttribDivisor(int index, GLuint divisor) const;
+	void setVBO(VertexBuffer* vertexBuffer);
+	void setEBO(IndexBuffer* indexBuffer);
+	VertexBuffer* getVBO() const;
+	IndexBuffer* getEBO() const;
 };
 
 #endif

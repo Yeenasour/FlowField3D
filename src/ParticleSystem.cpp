@@ -3,8 +3,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <VectorField.h>
-#include <Shader.h>
-#include <Camera.h>
+#include <Engine/Shader.h>
+#include <Engine/Camera.h>
 
 
 ParticleSystem::ParticleSystem(int n)
@@ -38,6 +38,15 @@ ParticleSystem::ParticleSystem(int n)
 	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(offsetof(Particle, lifetime)));
 	glEnableVertexAttribArray(2);
 	glVertexAttribDivisor(2, 1);
+
+	unsigned int indecies[] = {
+		0, 1, 2,
+		1, 3, 2
+	};
+
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indecies), indecies, GL_DYNAMIC_DRAW);
 	
 	glBindVertexArray(0);
 }
@@ -115,6 +124,6 @@ void ParticleSystem::Draw(Camera &camera, Shader &shaderProgram)
 	shaderProgram.setUniform4fv("projectionMatrix", &P[0][0]);
 
 	glBindVertexArray(VAO);
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, n);
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, n);
 	glBindVertexArray(0);
 }

@@ -1,4 +1,4 @@
-#include <Buffer.h>
+#include <Engine/Buffer.h>
 #include <GL/glew.h>
 
 /*
@@ -90,6 +90,7 @@ void DynamicVertexBuffer::subData(void* vertices, unsigned int size)
 
 
 IndexBuffer::IndexBuffer(unsigned int* vertices, unsigned int size)
+	: count(size / sizeof(unsigned int))
 {
 	glGenBuffers(1, &handle);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);

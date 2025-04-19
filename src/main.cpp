@@ -6,13 +6,13 @@
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
-#include <FileUtils.h>
-#include <Shader.h>
+#include <Engine/FileUtils.h>
+#include <Engine/Shader.h>
 #include <Axes.h>
 #include <VectorFieldRenderer.h>
 #include <VectorField.h>
-#include <OrbitalCamera.h>
-#include <FreeCamera.h>
+#include <Engine/OrbitalCamera.h>
+#include <Engine/FreeCamera.h>
 #include <ParticleSystem.h>
 
 

@@ -21,7 +21,7 @@ class ParticleSystem
 {
 private:
 	int n;
-	GLuint VAO, quadVBO, instanceVBO;
+	GLuint VAO, quadVBO, instanceVBO, EBO;
 	std::vector<Particle> particles;
 	float randf();
 	glm::vec3 generateRandomPosition();

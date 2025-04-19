@@ -1,7 +1,7 @@
 #include <VectorFieldRenderer.h>
 #include <VectorField.h>
-#include <Camera.h>
-#include <Shader.h>
+#include <Engine/Camera.h>
+#include <Engine/Shader.h>
 #include <vector>
 #include <GL/glew.h>
 

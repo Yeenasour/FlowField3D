@@ -1,15 +1,15 @@
-#ifndef FLOWFIELD_FREECAM
-#define FLOWFIELD_FREECAM
+#ifndef FLOWFIELD_ORBITALCAMERA
+#define FLOWFIELD_ORBITALCAMERA
 
-#include <Camera.h>
+#include <Engine/Camera.h>
 
 
-class FreeCamera : public Camera
+class OrbitalCamera : public Camera
 {
 private:
 	/* data */
 public:
-	FreeCamera(const glm::vec3& position, const glm::vec3& dir, const ViewFrustum& f);
+	OrbitalCamera(const glm::vec3& position, const glm::vec3& target, const ViewFrustum& f);
 	void setPos(const glm::vec3& position) override;
 	void move(const glm::vec3& velocity) override;
 	void lookAt(const glm::vec3& target) override;

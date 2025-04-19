@@ -1,6 +1,6 @@
 #include <Axes.h>
-#include <Camera.h>
-#include <Shader.h>
+#include <Engine/Camera.h>
+#include <Engine/Shader.h>
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 

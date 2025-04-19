@@ -5,6 +5,14 @@
 
 typedef unsigned int GLuint;
 
+class VertexBuffer
+{
+public:
+	virtual ~VertexBuffer() = 0;
+	virtual void bind() = 0;
+	virtual void unbind() = 0;
+};
+
 class StaticVertexBuffer
 {
 private:
@@ -32,11 +40,13 @@ class IndexBuffer
 {
 private:
 	GLuint handle;
+	unsigned int count;
 public:
 	IndexBuffer(unsigned int* indices, unsigned int size);
 	~IndexBuffer();
 	void bind() const;
 	void unbind() const;
+	unsigned int getCount() const { return count; }
 };
 
 

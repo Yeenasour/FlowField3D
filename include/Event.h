@@ -19,27 +19,7 @@ enum EventType {
 };
 
 
-class Event;
-
-class EventHandler
-{
-private:
-	Event& e;
-public:
-	EventHandler(Event& e)
-		: e(e) {}
-
-	template<typename T>
-	void handleEvent(std::function<void(const T&)> eventCallback)
-    {
-        if (typeid(T) == typeid(e))
-		{
-            eventCallback(static_cast<const T&>(e));
-			e.handeled = true;
-        }
-    }
-};
-
+class EventHandler;
 
 class Event
 {
@@ -206,6 +186,26 @@ public:
 		os << "MouseButtonReleasedEvent - button: " << button;
 		return os.str();
 	}
+};
+
+
+class EventHandler
+{
+private:
+	Event& e;
+public:
+	EventHandler(Event& e)
+		: e(e) {}
+
+	template<typename T>
+	void handleEvent(std::function<void(const T&)> eventCallback)
+    {
+        if (typeid(T) == typeid(e))
+		{
+            eventCallback(static_cast<const T&>(e));
+			e.handeled = true;
+        }
+    }
 };
 
 #endif

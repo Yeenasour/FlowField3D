@@ -180,8 +180,6 @@ int main()
 
 	glfwSetWindowUserPointer(window, &appData);
 
-	std::cout << glGetString(GL_VERSION) << std::endl;
-
 	Axes axes = Axes(5.0f);
 
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");

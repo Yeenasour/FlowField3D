@@ -1,6 +1,7 @@
+#include <GraphicsContext.h>
 #include <Window.h>
 #include <stdexcept>
-#include <Event.h>
+
 
 Window::Window(const WindowProperties& props)
 {
@@ -29,7 +30,9 @@ void Window::init(const WindowProperties& props)
 		data.name.c_str(),
 		NULL, NULL
 	);
-	glfwMakeContextCurrent(window);
+
+	context = new GraphicsContext(window);
+	context->init();
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetWindowUserPointer(window, &data);
 	setVSync(true);
@@ -111,7 +114,7 @@ void Window::update()
 {
 	glfwPollEvents();
 	// TODO frame-rate limiting
-	glfwSwapBuffers(this->window);
+	context->swapBuffers();
 }
 
 void Window::destroy()

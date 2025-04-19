@@ -4,9 +4,10 @@
 #include <string>
 #include <GLFW/glfw3.h>
 #include <functional>
+#include <Event.h>
 
 
-class Event;
+class GraphicsContext;
 
 struct WindowProperties
 {
@@ -18,6 +19,7 @@ class Window
 {
 private:
 	GLFWwindow* window;
+	GraphicsContext* context;
 	struct WindowData
 	{
 		std::string name;

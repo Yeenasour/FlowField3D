@@ -1,6 +1,5 @@
 #include <Shader.h>
 #include <FileUtils.h>
-#include <GL/glew.h>
 
 
 Shader::Shader(const std::string& vertexShader, const std::string& fragmentShader)

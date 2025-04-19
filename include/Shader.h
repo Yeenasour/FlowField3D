@@ -2,9 +2,8 @@
 #define SHADER
 
 #include <string>
+#include <GL/glew.h>
 
-
-typedef unsigned int GLuint;
 
 class Shader
 {

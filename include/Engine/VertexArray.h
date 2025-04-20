@@ -1,5 +1,5 @@
-#ifndef FLOWFIELD_VERTEXARRAY
-#define FLOWFIELD_VERTEXARRAY
+#ifndef ENGINE_VERTEXARRAY
+#define ENGINE_VERTEXARRAY
 
 
 typedef unsigned char GLboolean;

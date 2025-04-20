@@ -13,6 +13,19 @@ GLenum Renderer::toGlPrimitive(PrimitiveType type)
 	return -1;
 }
 
+void Renderer::init()
+{
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Renderer::clear()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 void Renderer::DrawIndexed(const VertexArray& VA, const Shader& shader, PrimitiveType type)
 {
 	shader.use();

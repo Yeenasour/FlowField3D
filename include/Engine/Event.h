@@ -1,5 +1,5 @@
-#ifndef FLOWFIELD_EVENT
-#define FLOWFIELD_EVENT
+#ifndef ENGINE_EVENT
+#define ENGINE_EVENT
 
 #include <functional>
 #include <sstream>
@@ -198,11 +198,11 @@ public:
 		: e(e) {}
 
 	template<typename T>
-	void handleEvent(std::function<void(const T&)> eventCallback)
+	void handleEvent(std::function<void(T&)> eventCallback)
     {
         if (typeid(T) == typeid(e))
 		{
-            eventCallback(static_cast<const T&>(e));
+            eventCallback(static_cast<T&>(e));
 			e.handeled = true;
         }
     }

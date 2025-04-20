@@ -1,5 +1,5 @@
-#ifndef FLOWFIELD_CAMERA
-#define FLOWFIELD_CAMERA
+#ifndef ENGINE_CAMERA
+#define ENGINE_CAMERA
 
 #include <glm/glm.hpp>
 

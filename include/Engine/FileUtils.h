@@ -1,5 +1,5 @@
-#ifndef FILEUTILS
-#define FILEUTILS
+#ifndef ENGINE_FILEUTILS
+#define ENGINE_FILEUTILS
 
 #include <fstream>
 #include <sstream>

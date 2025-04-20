@@ -1,5 +1,5 @@
-#ifndef FLOWFIELD_BUFFER
-#define FLOWFIELD_BUFFER
+#ifndef ENGINE_BUFFER
+#define ENGINE_BUFFER
 
 
 

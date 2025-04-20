@@ -1,5 +1,5 @@
-#ifndef FLOWFIELD_GRAPHICSCONTEXT
-#define FLOWFIELD_GRAPHICSCONTEXT
+#ifndef ENGINE_GRAPHICSCONTEXT
+#define ENGINE_GRAPHICSCONTEXT
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +16,7 @@ public:
 	~GraphicsContext();
 	void init();
 	void swapBuffers();
+	void setViewport(int width, int height);
 };
 
 

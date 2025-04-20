@@ -42,6 +42,12 @@ void Window::init(const WindowProperties& props)
 
 void Window::initCallbacks()
 {
+	glfwSetWindowCloseCallback(window, [](GLFWwindow* window) {
+		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		WindowCloseEvent e;
+		data.callback(e);
+	});
+
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
 		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 		data.width = width;
@@ -87,27 +93,30 @@ void Window::initCallbacks()
 		data.callback(e);
 	});
 
-	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-		WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+	glfwSetKeyCallback(window, keyCallback);
+}
 
-		switch (action)
+void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+	int mappedKey = keyMapping(key);
+	switch (action)
+	{
+		case GLFW_PRESS:
 		{
-			case GLFW_PRESS:
-			{
-				KeyPressedEvent e(key);
-				data.callback(e);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				KeyReleasedEvent e(key);
-				data.callback(e);
-				break;
-			}
-			default:
-				break;
+			KeyPressedEvent e(mappedKey);
+			data.callback(e);
+			break;
 		}
-	});
+		case GLFW_RELEASE:
+		{
+			KeyReleasedEvent e(mappedKey);
+			data.callback(e);
+			break;
+		}
+		default:
+			break;
+	}
 }
 
 void Window::update()
@@ -120,6 +129,7 @@ void Window::update()
 void Window::destroy()
 {
 	glfwDestroyWindow(this->window);
+	glfwTerminate();
 }
 
 void Window::setVSync(bool enable)
@@ -134,7 +144,26 @@ void Window::setVSync(bool enable)
 	}
 }
 
-void Window::setEventCallback(std::function<void(const Event&)> eventCallback)
+void Window::setEventCallback(std::function<void(Event&)> eventCallback)
 {
 	data.callback = eventCallback;
+}
+
+void Window::setViewport(int width, int height) const 
+{
+	context->setViewport(width, height);
+}
+
+int Window::keyMapping(int key)
+{
+	switch (key)
+	{
+		case GLFW_KEY_W: return 0;
+		case GLFW_KEY_A: return 1;
+		case GLFW_KEY_S: return 2;
+		case GLFW_KEY_D: return 3;
+		case GLFW_KEY_SPACE: return 4;
+		case GLFW_KEY_LEFT_CONTROL: return 5;
+		default: return -1;
+	}
 }

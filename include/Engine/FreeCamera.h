@@ -1,5 +1,5 @@
-#ifndef FLOWFIELD_FREECAM
-#define FLOWFIELD_FREECAM
+#ifndef ENGINE_FREECAM
+#define ENGINE_FREECAM
 
 #include <Engine/Camera.h>
 

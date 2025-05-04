@@ -2,8 +2,9 @@
 #include <VectorField.h>
 #include <Engine/Camera.h>
 #include <Engine/Shader.h>
+#include <Engine/ShaderUtils.h>
+#include <Engine/Buffer.h>
 #include <vector>
-#include <GL/glew.h>
 
 
 VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, float range, int segments) 
@@ -14,23 +15,21 @@ VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, float 
 
 VectorFieldRenderer::~VectorFieldRenderer()
 {
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+	//glDeleteVertexArrays(1, &VAO);
+    //glDeleteBuffers(1, &VBO);
+    //glDeleteBuffers(1, &EBO);
 }
 
 void VectorFieldRenderer::initBuffers()
 {
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+
 	updateBuffers();
-	glBindVertexArray(0);
 }
 
 void VectorFieldRenderer::updateBuffers()
 {
+	// TODO, cannot create new buffer each time, VAO must have way to update it's buffers.
+	VAO->bind();
 	int vecNum = pow(vectorDensity, 3);
 	int totalVerts = vecNum*2*(this->segments + 1);
 	std::vector<glm::vec3> basePoints;
@@ -62,12 +61,17 @@ void VectorFieldRenderer::updateBuffers()
 			vert = vert + 0.1f * (vf.evalAt(vert.x, vert.y, vert.z));
 		}
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, totalVerts*sizeof(glm::vec3), vertecies.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3), (void*)sizeof(glm::vec3));
-	glEnableVertexAttribArray(1);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, totalVerts*sizeof(glm::vec3), vertecies.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3), (void*)0);
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3), (void*)sizeof(glm::vec3));
+	//glEnableVertexAttribArray(1);
+	VAO->setVBO((VertexBuffer*)new StaticVertexBuffer(vertecies.data(), totalVerts*sizeof(glm::vec3)));
+	VAO->setAttribPointer(0, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 2 * sizeof(glm::vec3), 0);
+	VAO->enableAttribPointer(0);
+	VAO->setAttribPointer(1, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 2 * sizeof(glm::vec3), (void*)sizeof(glm::vec3));
+	VAO->enableAttribPointer(1);
 
 	std::vector<unsigned int> indices;
 	indices.reserve(numIndecies);
@@ -82,9 +86,11 @@ void VectorFieldRenderer::updateBuffers()
 			indices.push_back(index2);
 		}
 	}
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndecies*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-	glBindVertexArray(0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndecies*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+	//glBindVertexArray(0);
+	VAO->setEBO(new IndexBuffer(indices.data(), numIndecies));
+	VAO->unbind();
 }
 
 void VectorFieldRenderer::Draw(Camera &camera, Shader &shaderProgram)
@@ -95,7 +101,9 @@ void VectorFieldRenderer::Draw(Camera &camera, Shader &shaderProgram)
 
 	shaderProgram.setUniform4fv("modelViewProjectionMatrix", &MVP[0][0]);
 
-	glBindVertexArray(VAO);
+	//glBindVertexArray(VAO);
+	VAO->bind();
 	glDrawElements(GL_LINES, numIndecies, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
+	VAO->unbind();
 }

@@ -4,12 +4,15 @@
 
 
 VertexArray::VertexArray()
+	: VBO(nullptr), EBO(nullptr)
 {
 	glGenVertexArrays(1, &handle);
 }
 
 VertexArray::~VertexArray()
 {
+    delete VBO;
+    delete EBO;
 	glDeleteVertexArrays(1, &handle);
 }
 

@@ -1,6 +1,7 @@
 #ifndef FLOWFIELD_VECTORFIELD_RENDERER
 #define FLOWFIELD_VECTORFIELD_RENDERER
 
+#include <Engine/Renderable.h>
 #include <glm/glm.hpp>
 
 
@@ -9,11 +10,11 @@ class VectorField;
 class Camera;
 class Shader;
 
-class VectorFieldRenderer
+class VectorFieldRenderer : public Renderable
 {
 private:
     VectorField& vf;
-    GLuint VAO, VBO, EBO;
+    //GLuint VAO, VBO, EBO;
 	int segments;
 	int vectorDensity;
 	float drawingRange;

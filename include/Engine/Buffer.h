@@ -8,31 +8,31 @@ typedef unsigned int GLuint;
 class VertexBuffer
 {
 public:
-	virtual ~VertexBuffer() = 0;
-	virtual void bind() = 0;
-	virtual void unbind() = 0;
+	virtual ~VertexBuffer() {};
+	virtual void bind() const = 0;
+	virtual void unbind() const = 0;
 };
 
-class StaticVertexBuffer
+class StaticVertexBuffer : public VertexBuffer
 {
 private:
 	GLuint handle;
 public:
 	StaticVertexBuffer(void* vertices, unsigned int size);
 	~StaticVertexBuffer();
-	void bind() const;
-	void unbind() const;
+	void bind() const override;
+	void unbind() const override;
 };
 
-class DynamicVertexBuffer
+class DynamicVertexBuffer : public VertexBuffer
 {
 private:
 	GLuint handle;
 public:
 	DynamicVertexBuffer(void* vertices, unsigned int size);
 	~DynamicVertexBuffer();
-	void bind() const;
-	void unbind() const;
+	void bind() const override;
+	void unbind() const override;
 	void subData(void* vertices, unsigned int size);
 };
 

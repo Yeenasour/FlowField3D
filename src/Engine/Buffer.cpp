@@ -1,40 +1,6 @@
 #include <Engine/Buffer.h>
 #include <GL/glew.h>
 
-/*
-class StaticVertexBuffer
-{
-private:
-	GLuint handle;
-public:
-	StaticVertexBuffer(float* vertices, unsigned int size);
-	~StaticVertexBuffer();
-	void bind() const;
-	void unbind() const;
-};
-
-class DynamicVertexBuffer
-{
-private:
-	GLuint handle;
-public:
-	DynamicVertexBuffer(float* vertices, unsigned int size);
-	~DynamicVertexBuffer();
-	void bind() const;
-	void unbind() const;
-	void subData(float* vertices, unsigned int size);
-};
-
-class IndexBuffer
-{
-private:
-	GLuint handle;
-public:
-	IndexBuffer(unsigned int* indices, unsigned int size);
-	~IndexBuffer();
-	void bind() const;
-	void unbind() const;
-};*/
 
 StaticVertexBuffer::StaticVertexBuffer(void* vertices, unsigned int size)
 {

@@ -2,25 +2,24 @@
 #define FLOWFIELD_AXES
 
 #include <glm/glm.hpp>
+#include <Engine/Renderable.h>
+#include <Engine/VertexArray.h>
 
 
 typedef unsigned int GLuint;
 class Camera;
 class Shader;
 
-class Axes
+class Axes : public Renderable
 {
 private:
-	GLuint VAO, VBO, EBO;
 	float length;
-	glm::mat4 modelMatrix;
 	void initAxes();
 	void updateModelMatrix();
 public:
 	Axes(float size);
-	~Axes();
+	~Axes() override;
 	void setLength(float len);
-	void Draw(Camera &camera, Shader &shaderProgram);
 };
 
 #endif

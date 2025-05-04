@@ -6,6 +6,7 @@
 
 
 class VertexArray;
+class Renderable;
 
 enum PrimitiveType
 {
@@ -20,8 +21,8 @@ private:
 public:
 	static void init();
 	static void clear();
-	static void DrawIndexed(const VertexArray& VA, const Shader& shader, PrimitiveType type);
-	static void DrawInstanced(const VertexArray& VA, const Shader& shader, PrimitiveType type, int count);
+	static void DrawIndexed(const Renderable& object, const Shader& shader, PrimitiveType type);
+	static void DrawInstanced(const Renderable& object, const Shader& shader, PrimitiveType type, int count);
 };
 
 #endif

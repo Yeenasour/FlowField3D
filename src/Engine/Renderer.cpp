@@ -1,6 +1,7 @@
 #include <Engine/Renderer.h>
 #include <Engine/VertexArray.h>
 #include <Engine/Buffer.h>
+#include <Engine/Renderable.h>
 
 
 GLenum Renderer::toGlPrimitive(PrimitiveType type)
@@ -18,6 +19,7 @@ void Renderer::init()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -26,22 +28,22 @@ void Renderer::clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::DrawIndexed(const VertexArray& VA, const Shader& shader, PrimitiveType type)
+void Renderer::DrawIndexed(const Renderable& object, const Shader& shader, PrimitiveType type)
 {
 	shader.use();
 
-	VA.bind();
+	object.getVAO()->bind();
 	GLenum primitive = toGlPrimitive(type);
 	if (primitive < 0) return;
-	glDrawElements(primitive, VA.getEBO()->getCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(primitive, object.getVAO()->getEBO()->getCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void Renderer::DrawInstanced(const VertexArray& VA, const Shader& shader, PrimitiveType type, int count)
+void Renderer::DrawInstanced(const Renderable& object, const Shader& shader, PrimitiveType type, int count)
 {
 	shader.use();
 
-	VA.bind();
+	object.getVAO()->bind();
 	GLenum primitive = toGlPrimitive(type);
 	if (primitive < 0) return;
-	glDrawElementsInstanced(primitive, VA.getEBO()->getCount(), GL_UNSIGNED_INT, nullptr, count);
+	glDrawElementsInstanced(primitive, object.getVAO()->getEBO()->getCount(), GL_UNSIGNED_INT, nullptr, count);
 }

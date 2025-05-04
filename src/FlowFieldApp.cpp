@@ -100,7 +100,13 @@ void FlowFieldApp::run()
 
 		Renderer::clear();
 
-		axes.Draw(*data->camera, program);
+		program.use();
+		glm::mat4 VP = data->camera->getViewProjectionMatrix();
+		glm::mat4 M = axes.getModelMatrix();
+
+		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
+
+		Renderer::DrawIndexed(axes, program, PrimitiveType::Line);
 
 		if (data->newField) 
 		{
@@ -161,6 +167,7 @@ void FlowFieldApp::onEvent(Event& event)
 	handler.handleEvent<MouseMoveEvent>(BIND_CALLBACK(FlowFieldApp::onMouseMove));
 	handler.handleEvent<KeyPressedEvent>(BIND_CALLBACK(FlowFieldApp::onKeyPressed));
 	handler.handleEvent<KeyReleasedEvent>(BIND_CALLBACK(FlowFieldApp::onKeyReleased));
+	// TODO scroll
 }
 
 void FlowFieldApp::onWindowClose(WindowCloseEvent& event)

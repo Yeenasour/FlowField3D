@@ -1,11 +1,13 @@
 #include <Axes.h>
 #include <Engine/Camera.h>
 #include <Engine/Shader.h>
-#include <GL/glew.h>
+#include <Engine/ShaderUtils.h>
+#include <Engine/Buffer.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 
-Axes::Axes(float len) : length(len)
+Axes::Axes(float len)
+	: length(len), Renderable()
 {
 	initAxes();
 	updateModelMatrix();
@@ -13,9 +15,7 @@ Axes::Axes(float len) : length(len)
 
 Axes::~Axes()
 {
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+	
 }
 
 void Axes::initAxes()
@@ -34,46 +34,24 @@ void Axes::initAxes()
 		2, 3,
 		4, 5
 	};
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
+	
+	VAO->bind();
+	VAO->setVBO((VertexBuffer*)new StaticVertexBuffer(vertices, sizeof(vertices)));
+	VAO->setAttribPointer(0, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 6 * sizeof(float), 0);
+	VAO->enableAttribPointer(0);
+	VAO->setAttribPointer(1, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO->enableAttribPointer(1);
+	VAO->setEBO(new IndexBuffer(indicies, sizeof(indicies)));
+	VAO->unbind();
 }
 
 void Axes::updateModelMatrix()
 {
 	glm::mat4 mat = glm::mat4(1.0f);
-	this->modelMatrix = glm::scale(mat, glm::vec3(this->length));
+	modelMatrix = glm::scale(mat, glm::vec3(length));
 }
 
 void Axes::setLength(float len)
 {
 	this->length = len;
 }
-
-void Axes::Draw(Camera &camera, Shader &shaderProgram)
-{
-	shaderProgram.use();
-	glm::mat4 VP = camera.getViewProjectionMatrix();
-	glm::mat4 MVP = VP * modelMatrix;
-
-	shaderProgram.setUniform4fv("modelViewProjectionMatrix", &MVP[0][0]);
-
-	glBindVertexArray(VAO);
-	glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-

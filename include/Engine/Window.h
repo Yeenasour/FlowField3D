@@ -44,6 +44,7 @@ public:
 	std::string getName() const { return data.name; }
 	int getWidth() const { return data.width; }
 	int getHeight() const { return data.height; }
+	float getAspectRatio() const { return (float)data.width/(float)data.height; }
 	double getTime() const { return glfwGetTime(); }
 };
 

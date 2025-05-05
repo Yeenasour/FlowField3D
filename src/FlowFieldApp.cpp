@@ -11,6 +11,7 @@
 #include <Axes.h>
 #include <ParticleSystem.h>
 #include <VectorFieldRenderer.h>
+#include <iostream>
 
 #define BIND_CALLBACK(e) std::bind(&e, this, std::placeholders::_1)
 
@@ -39,7 +40,7 @@ void FlowFieldApp::run()
 	OrbitalCamera orbitCam = OrbitalCamera(
 		camStartPos,
 		target,
-		{glm::radians(45.0f), (float)window.getWidth()/(float)window.getHeight(), 0.1f, 100.0f}
+		{glm::radians(45.0f), window.getAspectRatio(), 0.1f, 100.0f}
 	);
 
 	FreeCamera freeCam = FreeCamera(
@@ -71,27 +72,44 @@ void FlowFieldApp::run()
 	Renderer::init();
 
 	double lastTime = window.getTime();
+	double accumulator = 0.0;
+	constexpr double simulationTimestep = 1.0f / 60.0f;
 
 	while (running)
 	{
 		double currentTime = window.getTime();
 		double deltaTime = currentTime - lastTime;
 
-		update(deltaTime);
-		particles.update(*data->field, deltaTime);
+		accumulator += deltaTime;
+
+		if (accumulator > simulationTimestep)
+		{
+			update(simulationTimestep);
+			particles.update(*data->field, simulationTimestep);
+			accumulator = 0.0;
+		}
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		
-		ImGui::SetNextWindowSize(ImVec2(300, 100));
+		ImGui::SetNextWindowSize(ImVec2(300, 120));
 		ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
 
+		ImGui::Text("DeltaTime: %.2fms", deltaTime * 1000);
 		ImGui::BeginGroup();
 		ImGui::Text("Camera-Type");
-		if (ImGui::Button("Free-Cam")) data->camera = &freeCam;
+		if (ImGui::Button("Free-Cam"))
+		{
+			freeCam.setAspectRatio(window.getAspectRatio());
+			data->camera = &freeCam;
+		}
 		ImGui::SameLine();
-		if (ImGui::Button("Orbital-Cam")) data->camera = &orbitCam;
+		if (ImGui::Button("Orbital-Cam"))
+		{
+			orbitCam.setAspectRatio(window.getAspectRatio());
+			data->camera = &orbitCam;
+		}
 		ImGui::EndGroup();
 		
 		ImGui::InputText("Equation", data->expressionBuffer, 256, ImGuiInputTextFlags_CallbackEdit, FlowFieldApp::editCallback, (void*)data);

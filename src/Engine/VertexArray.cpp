@@ -4,14 +4,19 @@
 
 
 VertexArray::VertexArray()
-	: VBO(nullptr), EBO(nullptr)
+	: EBO(nullptr)
 {
 	glGenVertexArrays(1, &handle);
 }
 
 VertexArray::~VertexArray()
 {
-    delete VBO;
+    //delete VBO;
+	for (VertexBuffer* vbo : VBOs)
+	{
+		delete vbo;
+	}
+	VBOs.clear();
     delete EBO;
 	glDeleteVertexArrays(1, &handle);
 }
@@ -46,11 +51,11 @@ void VertexArray::setAttribDivisor(int index, GLuint divisor) const
 	glVertexAttribDivisor(index, divisor);
 }
 
-void VertexArray::setVBO(VertexBuffer* vertexBuffer)
+void VertexArray::addVBO(VertexBuffer* vertexBuffer)
 {
 	glBindVertexArray(handle);
 	vertexBuffer->bind();
-	VBO = vertexBuffer;
+	VBOs.push_back(vertexBuffer);
 }
 
 void VertexArray::setEBO(IndexBuffer* indexBuffer)
@@ -60,9 +65,10 @@ void VertexArray::setEBO(IndexBuffer* indexBuffer)
 	EBO = indexBuffer;
 }
 
-VertexBuffer* VertexArray::getVBO() const
+VertexBuffer* VertexArray::getVBO(unsigned int index) const
 {
-	return this->VBO;
+	if (index >= VBOs.size()) return nullptr;
+	return VBOs.at(index);
 }
 
 IndexBuffer* VertexArray::getEBO() const

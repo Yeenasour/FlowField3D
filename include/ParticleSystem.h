@@ -2,6 +2,7 @@
 #define FLOWFIELD_PARTICLESYSTEM
 
 #include <glm/glm.hpp>
+#include <Engine/Renderable.h>
 #include <vector>
 
 
@@ -17,20 +18,19 @@ struct Particle
 	float lifetime;
 };
 
-class ParticleSystem
+class ParticleSystem : public Renderable
 {
 private:
-	int n;
-	GLuint VAO, quadVBO, instanceVBO, EBO;
+	unsigned int n;
 	std::vector<Particle> particles;
 	float randf();
 	glm::vec3 generateRandomPosition();
 	void initParticles();
 public:
-	ParticleSystem(int n);
+	ParticleSystem(unsigned int n);
 	~ParticleSystem();
 	void update(const VectorField& field, float dt);
-	void Draw(Camera &camera, Shader &shaderProgram);
+	unsigned int getCount() const;
 };
 
 #endif

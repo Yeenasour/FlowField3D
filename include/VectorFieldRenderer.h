@@ -14,7 +14,6 @@ class VectorFieldRenderer : public Renderable
 {
 private:
     VectorField& vf;
-    //GLuint VAO, VBO, EBO;
 	int segments;
 	int vectorDensity;
 	float drawingRange;
@@ -24,7 +23,6 @@ public:
     VectorFieldRenderer(VectorField &field, int density, float range, int segments);
     ~VectorFieldRenderer();
 	void updateBuffers();
-    void Draw(Camera &camera, Shader &shaderProgram);
 };
 
 #endif

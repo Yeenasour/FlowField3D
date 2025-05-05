@@ -1,6 +1,8 @@
 #ifndef ENGINE_VERTEXARRAY
 #define ENGINE_VERTEXARRAY
 
+#include <vector>
+
 
 typedef unsigned char GLboolean;
 typedef unsigned int GLuint;
@@ -15,7 +17,8 @@ class VertexArray
 {
 private:
 	GLuint handle;
-	VertexBuffer* VBO;
+	//VertexBuffer* VBO;
+	std::vector<VertexBuffer*> VBOs;
 	IndexBuffer* EBO;
 public:
 	VertexArray();
@@ -26,9 +29,9 @@ public:
 	void enableAttribPointer(int index) const;
 	void disableAttribPointer(int index) const;
 	void setAttribDivisor(int index, GLuint divisor) const;
-	void setVBO(VertexBuffer* vertexBuffer);
+	void addVBO(VertexBuffer* vertexBuffer);
 	void setEBO(IndexBuffer* indexBuffer);
-	VertexBuffer* getVBO() const;
+	VertexBuffer* getVBO(unsigned int index) const;
 	IndexBuffer* getEBO() const;
 };
 

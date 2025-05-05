@@ -12,7 +12,7 @@ struct ImGuiInputTextCallbackData;
 
 struct ApplicationData
 {
-	char expressionBuffer[256] = "x,x,x";
+	char expressionBuffer[256] = "-y-x,x-y,-z";
 	Window* window;
 	Camera* camera;
 	VectorField* field;

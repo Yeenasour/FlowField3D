@@ -47,7 +47,7 @@ void FlowFieldApp::run()
 		{glm::radians(45.0f), 1080.f/1080.f, 0.1f, 100.0f}
 	);
 
-	VectorField field = VectorField("x,x,x");
+	VectorField field = VectorField("-y-x,x-y,-z");
 
 	data->window = &window;
 	data->camera = &freeCam;
@@ -77,7 +77,6 @@ void FlowFieldApp::run()
 		double deltaTime = currentTime - lastTime;
 
 		update(deltaTime);
-		//std::cout << deltaTime << std::endl;
 		particles.update(*data->field, deltaTime);
 
 		ImGui_ImplOpenGL3_NewFrame();
@@ -102,6 +101,8 @@ void FlowFieldApp::run()
 
 		program.use();
 		glm::mat4 VP = data->camera->getViewProjectionMatrix();
+		glm::mat4 V = data->camera->getViewMatrix();
+		glm::mat4 P = data->camera->getProjectionMatrix();
 		glm::mat4 M = axes.getModelMatrix();
 
 		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
@@ -114,9 +115,22 @@ void FlowFieldApp::run()
 			data->newField = false;
 		}
 		
-		fieldRenderer.Draw(*data->camera, program);
+		M = fieldRenderer.getModelMatrix();
 
-		particles.Draw(*data->camera, particleProgram);
+		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
+
+		Renderer::DrawIndexed(fieldRenderer, program, PrimitiveType::Line);
+
+		particleProgram.use();
+
+		M = particles.getModelMatrix();
+
+		particleProgram.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
+		particleProgram.setUniform1f("particleSize", 0.1f);
+		particleProgram.setUniform4fv("viewMatrix", &V[0][0]);
+		particleProgram.setUniform4fv("projectionMatrix", &P[0][0]);
+
+		Renderer::DrawInstanced(particles, particleProgram, PrimitiveType::Triangle, particles.getCount());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

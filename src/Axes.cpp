@@ -36,7 +36,7 @@ void Axes::initAxes()
 	};
 	
 	VAO->bind();
-	VAO->setVBO((VertexBuffer*)new StaticVertexBuffer(vertices, sizeof(vertices)));
+	VAO->addVBO((VertexBuffer*)new StaticVertexBuffer(vertices, sizeof(vertices)));
 	VAO->setAttribPointer(0, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 6 * sizeof(float), 0);
 	VAO->enableAttribPointer(0);
 	VAO->setAttribPointer(1, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 6 * sizeof(float), (void*)(3 * sizeof(float)));

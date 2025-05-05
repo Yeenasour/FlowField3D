@@ -11,6 +11,7 @@ public:
 	virtual ~VertexBuffer() {};
 	virtual void bind() const = 0;
 	virtual void unbind() const = 0;
+	virtual void subData(void* vertices, unsigned int size) = 0;
 };
 
 class StaticVertexBuffer : public VertexBuffer
@@ -18,10 +19,11 @@ class StaticVertexBuffer : public VertexBuffer
 private:
 	GLuint handle;
 public:
-	StaticVertexBuffer(void* vertices, unsigned int size);
+	StaticVertexBuffer(const void* vertices, unsigned int size);
 	~StaticVertexBuffer();
 	void bind() const override;
 	void unbind() const override;
+	void subData(void* vertices, unsigned int size) override;
 };
 
 class DynamicVertexBuffer : public VertexBuffer
@@ -29,11 +31,11 @@ class DynamicVertexBuffer : public VertexBuffer
 private:
 	GLuint handle;
 public:
-	DynamicVertexBuffer(void* vertices, unsigned int size);
+	DynamicVertexBuffer(const void* vertices, unsigned int size);
 	~DynamicVertexBuffer();
 	void bind() const override;
 	void unbind() const override;
-	void subData(void* vertices, unsigned int size);
+	void subData(void* vertices, unsigned int size) override;
 };
 
 class IndexBuffer
@@ -42,10 +44,11 @@ private:
 	GLuint handle;
 	unsigned int count;
 public:
-	IndexBuffer(unsigned int* indices, unsigned int size);
+	IndexBuffer(const unsigned int* indices, unsigned int size);
 	~IndexBuffer();
 	void bind() const;
 	void unbind() const;
+	void subData(void* vertices, unsigned int size);
 	unsigned int getCount() const { return count; }
 };
 

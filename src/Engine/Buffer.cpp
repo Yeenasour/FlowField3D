@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 
 
-StaticVertexBuffer::StaticVertexBuffer(void* vertices, unsigned int size)
+StaticVertexBuffer::StaticVertexBuffer(const void* vertices, unsigned int size)
 {
 	glGenBuffers(1, &handle);
 	glBindBuffer(GL_ARRAY_BUFFER, handle);
@@ -25,8 +25,13 @@ void StaticVertexBuffer::unbind() const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void StaticVertexBuffer::subData(void* vertices, unsigned int size)
+{
+	glBufferSubData(GL_ARRAY_BUFFER, 0, size, vertices);
+}
 
-DynamicVertexBuffer::DynamicVertexBuffer(void* vertices, unsigned int size)
+
+DynamicVertexBuffer::DynamicVertexBuffer(const void* vertices, unsigned int size)
 {
 	glGenBuffers(1, &handle);
 	glBindBuffer(GL_ARRAY_BUFFER, handle);
@@ -55,7 +60,7 @@ void DynamicVertexBuffer::subData(void* vertices, unsigned int size)
 }
 
 
-IndexBuffer::IndexBuffer(unsigned int* vertices, unsigned int size)
+IndexBuffer::IndexBuffer(const unsigned int* vertices, unsigned int size)
 	: count(size / sizeof(unsigned int))
 {
 	glGenBuffers(1, &handle);
@@ -77,4 +82,9 @@ void IndexBuffer::bind() const
 void IndexBuffer::unbind() const
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void IndexBuffer::subData(void* vertices, unsigned int size)
+{
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, vertices);
 }

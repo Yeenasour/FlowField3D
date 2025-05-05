@@ -4,16 +4,17 @@
 #include <ctime>
 #include <VectorField.h>
 #include <Engine/Shader.h>
+#include <Engine/ShaderUtils.h>
+#include <Engine/Buffer.h>
 #include <Engine/Camera.h>
 
 
-ParticleSystem::ParticleSystem(int n)
+ParticleSystem::ParticleSystem(unsigned int n)
 	: n(n)
 {
 	initParticles();
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	VAO->bind();
 	
 	const float quad[] = {
 		-1.0f, -1.0f,
@@ -22,40 +23,31 @@ ParticleSystem::ParticleSystem(int n)
 		 1.0f,  1.0f,
 	};
 
-	glGenBuffers(1, &quadVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(0);
+	VAO->addVBO((VertexBuffer*) new StaticVertexBuffer(quad, sizeof(quad)));
+	VAO->setAttribPointer(0, 2, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 0, (void*)0);
+	VAO->enableAttribPointer(0);
 
-	glGenBuffers(1, &instanceVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * particles.size(), particles.data(), GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribDivisor(1, 1);
-
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(offsetof(Particle, lifetime)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribDivisor(2, 1);
+	VAO->addVBO((VertexBuffer*) new DynamicVertexBuffer(particles.data(), particles.size()*sizeof(Particle)));
+	VAO->setAttribPointer(1, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)0);
+	VAO->enableAttribPointer(1);
+	VAO->setAttribDivisor(1, 1);
+	VAO->setAttribPointer(2, 1, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)(offsetof(Particle, lifetime)));
+	VAO->enableAttribPointer(2);
+	VAO->setAttribDivisor(2, 1);
 
 	unsigned int indecies[] = {
 		0, 1, 2,
 		1, 3, 2
 	};
 
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indecies), indecies, GL_DYNAMIC_DRAW);
-	
-	glBindVertexArray(0);
+	VAO->setEBO(new IndexBuffer(indecies, sizeof(indecies)));
+
+	VAO->unbind();
 }
 
 ParticleSystem::~ParticleSystem()
 {
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &quadVBO);
-    glDeleteBuffers(1, &instanceVBO);
+	
 }
 
 void ParticleSystem::initParticles()
@@ -107,23 +99,13 @@ void ParticleSystem::update(const VectorField& field, float dt)
 
 		p.lifetime -= dt;
 	}
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle) * particles.size(), particles.data());
-	glBindVertexArray(0);
+	
+	VAO->bind();
+	VAO->getVBO(1)->subData(particles.data(), particles.size() * sizeof(Particle));
+	VAO->unbind();
 }
 
-void ParticleSystem::Draw(Camera &camera, Shader &shaderProgram)
+unsigned int ParticleSystem::getCount() const
 {
-	shaderProgram.use();
-	glm::mat4 V = camera.getViewMatrix();
-	glm::mat4 P = camera.getProjectionMatrix();
-
-	shaderProgram.setUniform1f("particleSize", 0.1f);
-	shaderProgram.setUniform4fv("viewMatrix", &V[0][0]);
-	shaderProgram.setUniform4fv("projectionMatrix", &P[0][0]);
-
-	glBindVertexArray(VAO);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, n);
-	glBindVertexArray(0);
+	return n;
 }

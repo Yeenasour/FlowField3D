@@ -11,10 +11,11 @@
 #include <Axes.h>
 #include <ParticleSystem.h>
 #include <VectorFieldRenderer.h>
-#include <iostream>
 
 #define BIND_CALLBACK(e) std::bind(&e, this, std::placeholders::_1)
 
+// TODO window forces to size that fits screen, which means theaspect ratio is wrong
+//		The unused camera gets the wrong projectionmatrix
 
 void FlowFieldApp::run()
 {
@@ -38,13 +39,13 @@ void FlowFieldApp::run()
 	OrbitalCamera orbitCam = OrbitalCamera(
 		camStartPos,
 		target,
-		{glm::radians(45.0f), 1080.f/1080.f, 0.1f, 100.0f}
+		{glm::radians(45.0f), (float)window.getWidth()/(float)window.getHeight(), 0.1f, 100.0f}
 	);
 
 	FreeCamera freeCam = FreeCamera(
 		camStartPos,
 		glm::normalize(target - camStartPos),
-		{glm::radians(45.0f), 1080.f/1080.f, 0.1f, 100.0f}
+		{glm::radians(45.0f), (float)window.getWidth()/(float)window.getHeight(), 0.1f, 100.0f}
 	);
 
 	VectorField field = VectorField("-y-x,x-y,-z");
@@ -173,15 +174,14 @@ int FlowFieldApp::editCallback(ImGuiInputTextCallbackData* data)
 void FlowFieldApp::onEvent(Event& event)
 {
 	EventHandler handler(event);
-	std::cout << event.toString() << std::endl;
 	handler.handleEvent<WindowCloseEvent>(BIND_CALLBACK(FlowFieldApp::onWindowClose));
 	handler.handleEvent<WindowResizeEvent>(BIND_CALLBACK(FlowFieldApp::onWindowResize));
 	handler.handleEvent<MouseButtonPressedEvent>(BIND_CALLBACK(FlowFieldApp::onMouseButtonPressed));
 	handler.handleEvent<MouseButtonReleasedEvent>(BIND_CALLBACK(FlowFieldApp::onMouseButtonReleased));
 	handler.handleEvent<MouseMoveEvent>(BIND_CALLBACK(FlowFieldApp::onMouseMove));
+	handler.handleEvent<MouseScrolledEvent>(BIND_CALLBACK(FlowFieldApp::onMouseScroll));
 	handler.handleEvent<KeyPressedEvent>(BIND_CALLBACK(FlowFieldApp::onKeyPressed));
 	handler.handleEvent<KeyReleasedEvent>(BIND_CALLBACK(FlowFieldApp::onKeyReleased));
-	// TODO scroll
 }
 
 void FlowFieldApp::onWindowClose(WindowCloseEvent& event)
@@ -221,6 +221,13 @@ void FlowFieldApp::onMouseMove(MouseMoveEvent& event)
 	}
 	data->lastMouseX = event.getXPos();
 	data->lastMouseY = event.getYPos();
+}
+
+void FlowFieldApp::onMouseScroll(MouseScrolledEvent& event)
+{
+	constexpr float zoomFactor = 0.1f;
+	float yOffset = (event.getYOffset() * zoomFactor) + 1;
+	data->camera->zoom(yOffset);
 }
 
 void FlowFieldApp::onKeyPressed(KeyPressedEvent& event)

@@ -2,24 +2,23 @@
 
 precision highp float;
 
-in float plifetime;
 in vec2 fragOffset;
+in float speed;
 
 out vec4 screenColor;
 
 void main()
 {
-    float alpha = clamp(plifetime, 0.0, 1.0);
-
 	float d = length(fragOffset);
     if (d > 1.0) {
         discard;
     }
 
-    vec3 color = mix(vec3(0.0), vec3(1.0), alpha);
+	//float v = length(velocity);
 
-    screenColor = vec4(color, alpha);
+	float t = clamp(speed / 5.0, 0.0, 1.0);
 
-    if (alpha < 0.01)
-        discard;
+    vec3 color = mix(vec3(0.008,0.541,0.898), vec3(0.957,0.251,0.227), t);
+
+    screenColor = vec4(color, 1.0);
 }

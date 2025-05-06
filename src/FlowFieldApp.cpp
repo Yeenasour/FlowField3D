@@ -15,8 +15,6 @@
 
 #define BIND_CALLBACK(e) std::bind(&e, this, std::placeholders::_1)
 
-// TODO window forces to size that fits screen, which means theaspect ratio is wrong
-//		The unused camera gets the wrong projectionmatrix
 
 void FlowFieldApp::run()
 {
@@ -49,7 +47,7 @@ void FlowFieldApp::run()
 		{glm::radians(45.0f), (float)window.getWidth()/(float)window.getHeight(), 0.1f, 100.0f}
 	);
 
-	VectorField field = VectorField("-y-x,x-y,-z");
+	VectorField field("-y-x,x-y,-z");
 
 	data->window = &window;
 	data->camera = &freeCam;
@@ -64,7 +62,7 @@ void FlowFieldApp::run()
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
 
-	VectorFieldRenderer fieldRenderer = VectorFieldRenderer(*data->field, 6, 10, 5);
+	VectorFieldRenderer fieldRenderer(*data->field, 6, 10, 5);
 
 	ParticleSystem particles = ParticleSystem(100);
 	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");
@@ -118,11 +116,20 @@ void FlowFieldApp::run()
 
 		Renderer::clear();
 
-		program.use();
 		glm::mat4 VP = data->camera->getViewProjectionMatrix();
 		glm::mat4 V = data->camera->getViewMatrix();
 		glm::mat4 P = data->camera->getProjectionMatrix();
 		glm::mat4 M = axes.getModelMatrix();
+
+		particleProgram.use();
+
+		particleProgram.setUniform1f("particleSize", 0.1f);
+		particleProgram.setUniform4fv("viewMatrix", &V[0][0]);
+		particleProgram.setUniform4fv("projectionMatrix", &P[0][0]);
+
+		Renderer::DrawInstanced(particles, particleProgram, PrimitiveType::Triangle, particles.getCount());
+
+		program.use();
 
 		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
 
@@ -139,17 +146,6 @@ void FlowFieldApp::run()
 		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
 
 		Renderer::DrawIndexed(fieldRenderer, program, PrimitiveType::Line);
-
-		particleProgram.use();
-
-		M = particles.getModelMatrix();
-
-		particleProgram.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
-		particleProgram.setUniform1f("particleSize", 0.1f);
-		particleProgram.setUniform4fv("viewMatrix", &V[0][0]);
-		particleProgram.setUniform4fv("projectionMatrix", &P[0][0]);
-
-		Renderer::DrawInstanced(particles, particleProgram, PrimitiveType::Triangle, particles.getCount());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

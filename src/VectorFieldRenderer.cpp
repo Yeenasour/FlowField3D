@@ -6,9 +6,18 @@
 #include <Engine/Buffer.h>
 #include <vector>
 
+#include <iostream>
+#include <vector>
+#include <glm/vec3.hpp>
+
+void printVec3Data(const std::vector<glm::vec3>& vec) {
+    for (const auto& v : vec) {
+        std::cout << "x: " << v.x << ", y: " << v.y << ", z: " << v.z << std::endl;
+    }
+}
 
 VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, float range, int segments) 
-	: vf(field), vectorDensity(density), drawingRange(range), segments(segments), numIndecies(2*(segments)*pow(density, 3))
+	: vf(field), vectorDensity(density), drawingRange(range), segments(segments), numIndecies(2*(segments)*pow(density, 3)), Renderable()
 {
 	initBuffers();
 }
@@ -69,7 +78,8 @@ void VectorFieldRenderer::updateBuffers()
 			vert = vert + 0.1f * (vf.evalAt(vert.x, vert.y, vert.z));
 		}
 	}
-	
+
+	VAO->getVBO(0)->bind();
 	VAO->getVBO(0)->subData(vertecies.data(), totalVerts*sizeof(glm::vec3));
 
 	std::vector<unsigned int> indices;

@@ -11,7 +11,6 @@
 #include <Axes.h>
 #include <ParticleSystem.h>
 #include <VectorFieldRenderer.h>
-#include <iostream>
 
 #define BIND_CALLBACK(e) std::bind(&e, this, std::placeholders::_1)
 

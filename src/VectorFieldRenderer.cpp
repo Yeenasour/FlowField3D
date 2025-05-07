@@ -6,15 +6,6 @@
 #include <Engine/Buffer.h>
 #include <vector>
 
-#include <iostream>
-#include <vector>
-#include <glm/vec3.hpp>
-
-void printVec3Data(const std::vector<glm::vec3>& vec) {
-    for (const auto& v : vec) {
-        std::cout << "x: " << v.x << ", y: " << v.y << ", z: " << v.z << std::endl;
-    }
-}
 
 VectorFieldRenderer::VectorFieldRenderer(VectorField &field, int density, float range) 
 	: vf(field), vectorDensity(density), drawingRange(range), Renderable()

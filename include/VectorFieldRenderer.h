@@ -17,10 +17,9 @@ private:
 	int segments;
 	int vectorDensity;
 	float drawingRange;
-	int numIndecies;
 	void initBuffers();
 public:
-    VectorFieldRenderer(VectorField &field, int density, float range, int segments);
+    VectorFieldRenderer(VectorField &field, int density, float range);
     ~VectorFieldRenderer();
 	void updateBuffers();
 };

@@ -62,7 +62,7 @@ void FlowFieldApp::run()
 	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
 	program.use();
 
-	VectorFieldRenderer fieldRenderer(*data->field, 6, 10, 5);
+	VectorFieldRenderer fieldRenderer(*data->field, 10, 5);
 
 	ParticleSystem particles = ParticleSystem(100);
 	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");

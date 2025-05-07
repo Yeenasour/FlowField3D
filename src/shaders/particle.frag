@@ -16,9 +16,9 @@ void main()
 
 	//float v = length(velocity);
 
-	float t = clamp(speed / 5.0, 0.0, 1.0);
+	float t = clamp(speed / 4.0, 0.0, 1.0);
 
-    vec3 color = mix(vec3(0.008,0.541,0.898), vec3(0.957,0.251,0.227), t);
+    vec3 color = mix(vec3(1.0), vec3(0.957,0.251,0.227), t);
 
     screenColor = vec4(color, 1.0);
 }

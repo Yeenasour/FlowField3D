@@ -31,12 +31,9 @@ ParticleSystem::ParticleSystem(unsigned int n)
 	VAO->setAttribPointer(1, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)0);
 	VAO->enableAttribPointer(1);
 	VAO->setAttribDivisor(1, 1);
-	VAO->setAttribPointer(2, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)(offsetof(Particle, vel)));
+	VAO->setAttribPointer(2, 1, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)(offsetof(Particle, lifetime)));
 	VAO->enableAttribPointer(2);
 	VAO->setAttribDivisor(2, 1);
-	VAO->setAttribPointer(3, 1, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)(offsetof(Particle, lifetime)));
-	VAO->enableAttribPointer(3);
-	VAO->setAttribDivisor(3, 1);
 
 	unsigned int indecies[] = {
 		0, 1, 2,

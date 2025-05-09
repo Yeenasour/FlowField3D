@@ -58,10 +58,11 @@ void FlowFieldApp::run()
 	
 	Axes axes = Axes(5.0f);
 
-	Shader program = Shader("../src/shaders/shader.vert", "../src/shaders/shader.frag");
+	Shader program = Shader("../src/shaders/simple.vert", "../src/shaders/simple.frag");
 	program.use();
 
 	VectorFieldRenderer fieldRenderer(*data->field, 10, 5);
+	Shader vectorProgram = Shader("../src/shaders/vector.vert", "../src/shaders/vector.frag");
 
 	ParticleSystem particles = ParticleSystem(100);
 	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");
@@ -139,12 +140,18 @@ void FlowFieldApp::run()
 			fieldRenderer.updateBuffers();
 			data->newField = false;
 		}
-		
+
+		vectorProgram.use();
+
 		M = fieldRenderer.getModelMatrix();
+		glm::vec3 camPos = data->camera->getPosition();
 
-		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
+		vectorProgram.setUniform1f("vectorScale", 0.25f);
+		vectorProgram.setUniform3f("cameraPos", camPos.x, camPos.y, camPos.z);
+		vectorProgram.setUniform4fv("modelMatrix", &(M)[0][0]);
+		vectorProgram.setUniform4fv("viewProjection", &(VP)[0][0]);
 
-		Renderer::DrawIndexed(fieldRenderer, program, PrimitiveType::Line);
+		Renderer::DrawInstanced(fieldRenderer, vectorProgram, PrimitiveType::Triangle, 1000);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

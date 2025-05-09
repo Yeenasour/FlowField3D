@@ -29,3 +29,8 @@ glm::mat4 Camera::getProjectionMatrix() const
 {
 	return projectionMatrix;
 }
+
+glm::vec3 Camera::getPosition() const
+{
+	return pos;
+}

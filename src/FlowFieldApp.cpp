@@ -14,15 +14,6 @@
 
 #define BIND_CALLBACK(e) std::bind(&e, this, std::placeholders::_1)
 
-/*
-	TODO ideas
-	Add constant that you can scale with a slider
-	Add t variable
-	Add a function for absolute value
-	Add scaling factor for coordinate system, apply for xyz before each eval.
-	Add point-particle-spawner to follow particles from a specific point.
-	Add slider to control how tightly particle follows field
-*/
 
 void FlowFieldApp::run()
 {
@@ -60,10 +51,8 @@ void FlowFieldApp::run()
 	data->window = &window;
 	data->camera = &freeCam;
 	data->field = &field;
-	for (int i = 0; i < 6; i++)
-	{
-		data->keyStatus[i] = false;
-	}
+	for (int i = 0; i < 6; i++) data->keyStatus[i] = false;
+	for (int i = 0; i < 3; i++) data->renderTargets[i] = true;
 	
 	Axes axes = Axes(5.0f);
 
@@ -73,7 +62,7 @@ void FlowFieldApp::run()
 	VectorFieldRenderer fieldRenderer(*data->field, 10, 5);
 	Shader vectorProgram = Shader("../src/shaders/vector.vert", "../src/shaders/vector.frag");
 
-	ParticleSystem particles = ParticleSystem(data->particleCount, data->partileLifetime);
+	ParticleSystem particles = ParticleSystem(data->particleCount, data->particleLifetime);
 	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");
 
 	Renderer::init();
@@ -100,7 +89,7 @@ void FlowFieldApp::run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		
-		ImGui::SetNextWindowSize(ImVec2(300, 250));
+		ImGui::SetNextWindowSize(ImVec2(380, 350));
 		ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
 
 		ImGui::Text("DeltaTime: %.2fms", deltaTime * 1000);
@@ -124,9 +113,29 @@ void FlowFieldApp::run()
 		ImGui::BeginGroup();
 		ImGui::Text("Particle Control");
 		if (ImGui::SliderInt("Particle Count", &data->particleCount, 1, 1000)) particles.setParticleCount(data->particleCount);
-		if (ImGui::SliderFloat("Particle Lifetime", &data->partileLifetime, 0.5, 10.0)) particles.setLifetime(data->partileLifetime);
-		ImGui::Button("Reset particles");
+		if (ImGui::SliderFloat("Particle Lifetime", &data->particleLifetime, 0.5, 10.0, "%.2f")) particles.setLifetime(data->particleLifetime);
+		if (ImGui::SliderFloat("Particle Inertia", &data->particleInertia, 0.0, 1.0, "%.2f")) particles.setInertia(data->particleInertia);
+		ImGui::EndGroup();
 
+		ImGui::BeginGroup();
+		ImGui::Text("Draw Control");
+		ImGui::Checkbox("Draw Particles", &data->renderTargets[0]);
+		ImGui::Checkbox("Draw Axes", &data->renderTargets[1]);
+		ImGui::Checkbox("Draw Vectorfield", &data->renderTargets[2]);
+		ImGui::EndGroup();
+
+		ImGui::BeginGroup();
+		ImGui::Text("Simulation Parameters");
+		if (ImGui::InputFloat("Constant \"a\"", &data->simulationConstant))
+		{
+			data->field->setFieldConstant(data->simulationConstant);
+			data->newField = true;
+		}
+		if (ImGui::SliderFloat("Coordinate Scale", &data->coordinateScale, 1.0f, 10.0f, "%.1f"))
+		{
+			data->field->setScale(data->coordinateScale);
+			data->newField = true;
+		}
 		ImGui::EndGroup();
 
 		ImGui::End();
@@ -141,17 +150,17 @@ void FlowFieldApp::run()
 		particleProgram.use();
 
 		particleProgram.setUniform1f("particleSize", 0.1f);
-		particleProgram.setUniform1f("maxLifetime", data->partileLifetime);
+		particleProgram.setUniform1f("maxLifetime", data->particleLifetime);
 		particleProgram.setUniform4fv("viewMatrix", &V[0][0]);
 		particleProgram.setUniform4fv("projectionMatrix", &P[0][0]);
 
-		Renderer::DrawInstanced(particles, particleProgram, PrimitiveType::Triangle, particles.getCount());
+		if (data->renderTargets[0]) Renderer::DrawInstanced(particles, particleProgram, PrimitiveType::Triangle, particles.getCount());
 
 		program.use();
 
 		program.setUniform4fv("modelViewProjectionMatrix", &(VP * M)[0][0]);
 
-		Renderer::DrawIndexed(axes, program, PrimitiveType::Line);
+		if (data->renderTargets[1]) Renderer::DrawIndexed(axes, program, PrimitiveType::Line);
 
 		if (data->newField) 
 		{
@@ -169,7 +178,7 @@ void FlowFieldApp::run()
 		vectorProgram.setUniform4fv("modelMatrix", &(M)[0][0]);
 		vectorProgram.setUniform4fv("viewProjection", &(VP)[0][0]);
 
-		Renderer::DrawInstanced(fieldRenderer, vectorProgram, PrimitiveType::Triangle, 1000);
+		if (data->renderTargets[2]) Renderer::DrawInstanced(fieldRenderer, vectorProgram, PrimitiveType::Triangle, 1000);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

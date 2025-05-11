@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 
 
-Expression::Expression(const std::string &e) : expression(e)
+Expression::Expression(const std::string &e)
+	: expression(e)
 {
 
 }
@@ -18,6 +19,11 @@ void Expression::setExpression(const std::string &e)
 	this->expression = e;
 }
 
+void Expression::setConstant(float val)
+{
+	this->constant = val;
+}
+
 float Expression::eval(float x, float y, float z) const
 {
 	constexpr int MAX_STACK_SIZE = 16;
@@ -26,7 +32,7 @@ float Expression::eval(float x, float y, float z) const
 	int top = 0;
 	for (auto &&c : this->expression)
 	{
-		if (c == 'x' || c == 'y' || c == 'z' || c == 'r' || c == 'R')
+		if (c == 'x' || c == 'y' || c == 'z' || c == 'r' || c == 'R' || c == 'a')
 		{
 			float val;
 			switch (c)
@@ -34,6 +40,7 @@ float Expression::eval(float x, float y, float z) const
 			case 'x': val = x; break;
 			case 'y': val = y; break;
 			case 'z': val = z; break;
+			case 'a': val = constant; break;
 			case 'r':
 				val = glm::sqrt(x*x + y*y + z*z);
 				break;

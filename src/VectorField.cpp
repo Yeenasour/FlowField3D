@@ -4,7 +4,7 @@
 
 
 VectorField::VectorField(const std::string &fieldExpression)
-    : xe(""), ye(""), ze("")
+    : constant(1.0f), coordinateScale(1.0f), xe(""), ye(""), ze("")
 {
     try
     {
@@ -14,6 +14,7 @@ VectorField::VectorField(const std::string &fieldExpression)
             this->xe = expressions.at(0);
             this->ye = expressions.at(1);
             this->ze = expressions.at(2);
+			setFieldConstant();
         }
     }
     catch(const std::exception& e) {}
@@ -33,6 +34,7 @@ void VectorField::setField(const std::string &fieldExpression)
         this->xe = expressions.at(0);
         this->ye = expressions.at(1);
         this->ze = expressions.at(2);
+		setFieldConstant();
     }
     catch(const std::exception& e) {
 		this->xe.setExpression("");
@@ -41,10 +43,33 @@ void VectorField::setField(const std::string &fieldExpression)
 	}
 }
 
+void VectorField::setScale(float scale)
+{
+	coordinateScale = scale;
+}
+
+void VectorField::setFieldConstant()
+{
+	xe.setConstant(constant);
+	ye.setConstant(constant);
+	ze.setConstant(constant);
+}
+
+void VectorField::setFieldConstant(float val)
+{
+	constant = val;
+	xe.setConstant(val);
+	ye.setConstant(val);
+	ze.setConstant(val);
+}
+
 glm::vec3 VectorField::evalAt(float x, float y, float z) const
 {
 	try
 	{
+		x *= coordinateScale;
+		y *= coordinateScale;
+		z *= coordinateScale;
 		float xVal = xe.eval(x, y, z);
     	float yVal = ye.eval(x, y, z);
    		float zVal = ze.eval(x, y, z);

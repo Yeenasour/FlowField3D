@@ -10,7 +10,7 @@
 
 
 ParticleSystem::ParticleSystem(unsigned int n, float t)
-	: n(n), maxLifetime(t), Renderable()
+	: n(n), maxLifetime(t), particleInertia(0.5f), Renderable()
 {
 	initParticles();
 
@@ -27,7 +27,6 @@ ParticleSystem::ParticleSystem(unsigned int n, float t)
 	VAO->setAttribPointer(0, 2, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, 0, (void*)0);
 	VAO->enableAttribPointer(0);
 
-	//VAO->addVBO((VertexBuffer*) new DynamicVertexBuffer(particles.data(), particles.size()*sizeof(Particle)));
 	VAO->addVBO((VertexBuffer*) new DynamicVertexBuffer(nullptr, 1000*sizeof(Particle)));
 	VAO->getVBO(0)->subData(particles.data(), particles.size()*sizeof(Particle));
 	VAO->setAttribPointer(1, 3, ShaderDataTypeToOpenGLBaseType(ShaderDataType::Float), false, sizeof(Particle), (void*)0);
@@ -82,6 +81,7 @@ glm::vec3 ParticleSystem::generateRandomPosition()
 
 void ParticleSystem::update(const VectorField& field, float dt)
 {
+	float inertiaFactor = 1.0f - std::pow(particleInertia, dt * 1.5f);
 	for (auto &&p : particles)
 	{
 		if (p.age > maxLifetime)
@@ -94,11 +94,8 @@ void ParticleSystem::update(const VectorField& field, float dt)
 		}
 
 		glm::vec3 force = field.evalAt(p.pos.x, p.pos.y, p.pos.z);
-		
-		float t = 0.5f * dt;
-		p.vel = p.vel * (1 - t) + force * t;
+		p.vel += (force - p.vel) * inertiaFactor;
 		p.pos += p.vel * dt;
-
 		p.age += dt;
 	}
 	
@@ -110,40 +107,6 @@ void ParticleSystem::update(const VectorField& field, float dt)
 
 void ParticleSystem::setParticleCount(int count)
 {
-	/*int diff = count - n;
-	if (diff == 0) return;
-	float particleDelta = maxLifetime / (float) count;
-	if (diff < 0) particleDelta *= -1.0f;
-	float lifeScale = (float) n / (float) count;
-	float prevAge = -1.0f;
-	bool nonOrdered = (particles.at(0).age > particles.back().age);
-	for (auto &&p : particles)
-	{
-		p.age *= lifeScale;
-		float copy = p.age;
-		if (nonOrdered && p.age > prevAge)
-		{
-			p.age += particleDelta;
-			prevAge = copy;
-		}
-	}
-	if (diff < 0)
-	{
-		for (int i = 0; i < -diff; i++)
-		{
-			particles.pop_back();
-		}
-	}
-	else
-	{
-		float lastAge = particles.back().age;
-		for (int i = 1; i <= diff; i++)
-		{
-			glm::vec3 pos = generateRandomPosition();
-			glm::vec3 vel(0.0f);
-			particles.push_back({pos, vel, lastAge + i * particleDelta});
-		}
-	}*/
 	int diff = count - n;
 	if (diff == 0) return;
 	int i = 0;
@@ -174,12 +137,23 @@ void ParticleSystem::setParticleCount(int count)
 
 void ParticleSystem::setLifetime(float t)
 {
-	float lifeScale = t / maxLifetime;
+	//float lifeScale = t / maxLifetime;
+	//for (auto &&p : particles)
+	//{
+	//	p.age *= lifeScale;
+	//}
+	int i = 0;
+	float particleDelta = t / n;
 	for (auto &&p : particles)
 	{
-		p.age *= lifeScale;
+		p.age = i++ * particleDelta;
 	}
 	maxLifetime = t;
+}
+
+void ParticleSystem::setInertia(float i)
+{
+	particleInertia = i;
 }
 
 unsigned int ParticleSystem::getCount() const

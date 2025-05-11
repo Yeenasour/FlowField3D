@@ -125,7 +125,7 @@ bool ExpressionParser::isFunc(char c)
 
 bool ExpressionParser::isVar(char c)
 {
-	return (c == 'x' || c == 'y' || c == 'z' || c == 'r' || c == 'R');
+	return (c == 'x' || c == 'y' || c == 'z' || c == 'r' || c == 'R' || c == 'a');
 }
 
 bool ExpressionParser::isOperator(char c)

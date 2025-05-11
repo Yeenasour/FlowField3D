@@ -18,10 +18,14 @@ struct ApplicationData
 	VectorField* field;
 	float lastMouseX, lastMouseY;
 	int particleCount = 100;
-	float partileLifetime = 2.0f;
+	float particleLifetime = 2.0f;
+	float particleInertia = 0.5f;
+	float simulationConstant = 1.0f;
+	float coordinateScale = 1.0f;
 	bool mouseHeld = false;
 	bool newField = false;
 	bool keyStatus[6];
+	bool renderTargets[3];
 };
 
 class FlowFieldApp : public Application

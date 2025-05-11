@@ -23,6 +23,7 @@ class ParticleSystem : public Renderable
 private:
 	unsigned int n;
 	float maxLifetime;
+	float particleInertia;
 	std::vector<Particle> particles;
 	float randf();
 	glm::vec3 generateRandomPosition();
@@ -33,6 +34,7 @@ public:
 	void update(const VectorField& field, float dt);
 	void setParticleCount(int count);
 	void setLifetime(float t);
+	void setInertia(float i);
 	unsigned int getCount() const;
 };
 

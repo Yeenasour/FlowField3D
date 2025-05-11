@@ -21,6 +21,7 @@
 	Add a function for absolute value
 	Add scaling factor for coordinate system, apply for xyz before each eval.
 	Add point-particle-spawner to follow particles from a specific point.
+	Add slider to control how tightly particle follows field
 */
 
 void FlowFieldApp::run()

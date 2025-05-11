@@ -14,6 +14,14 @@
 
 #define BIND_CALLBACK(e) std::bind(&e, this, std::placeholders::_1)
 
+/*
+	TODO ideas
+	Add constant that you can scale with a slider
+	Add t variable
+	Add a function for absolute value
+	Add scaling factor for coordinate system, apply for xyz before each eval.
+	Add point-particle-spawner to follow particles from a specific point.
+*/
 
 void FlowFieldApp::run()
 {
@@ -64,7 +72,7 @@ void FlowFieldApp::run()
 	VectorFieldRenderer fieldRenderer(*data->field, 10, 5);
 	Shader vectorProgram = Shader("../src/shaders/vector.vert", "../src/shaders/vector.frag");
 
-	ParticleSystem particles = ParticleSystem(100);
+	ParticleSystem particles = ParticleSystem(data->particleCount, data->partileLifetime);
 	Shader particleProgram = Shader("../src/shaders/particle.vert", "../src/shaders/particle.frag");
 
 	Renderer::init();
@@ -91,7 +99,7 @@ void FlowFieldApp::run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		
-		ImGui::SetNextWindowSize(ImVec2(300, 120));
+		ImGui::SetNextWindowSize(ImVec2(300, 250));
 		ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoResize);
 
 		ImGui::Text("DeltaTime: %.2fms", deltaTime * 1000);
@@ -112,6 +120,14 @@ void FlowFieldApp::run()
 		
 		ImGui::InputText("Equation", data->expressionBuffer, 256, ImGuiInputTextFlags_CallbackEdit, FlowFieldApp::editCallback, (void*)data);
 
+		ImGui::BeginGroup();
+		ImGui::Text("Particle Control");
+		if (ImGui::SliderInt("Particle Count", &data->particleCount, 1, 1000)) particles.setParticleCount(data->particleCount);
+		if (ImGui::SliderFloat("Particle Lifetime", &data->partileLifetime, 0.5, 10.0)) particles.setLifetime(data->partileLifetime);
+		ImGui::Button("Reset particles");
+
+		ImGui::EndGroup();
+
 		ImGui::End();
 
 		Renderer::clear();
@@ -124,6 +140,7 @@ void FlowFieldApp::run()
 		particleProgram.use();
 
 		particleProgram.setUniform1f("particleSize", 0.1f);
+		particleProgram.setUniform1f("maxLifetime", data->partileLifetime);
 		particleProgram.setUniform4fv("viewMatrix", &V[0][0]);
 		particleProgram.setUniform4fv("projectionMatrix", &P[0][0]);
 
@@ -246,7 +263,7 @@ void FlowFieldApp::onMouseMove(MouseMoveEvent& event)
 void FlowFieldApp::onMouseScroll(MouseScrolledEvent& event)
 {
 	constexpr float zoomFactor = 0.1f;
-	float yOffset = (event.getYOffset() * zoomFactor) + 1;
+	float yOffset = (-event.getYOffset() * zoomFactor) + 1;
 	data->camera->zoom(yOffset);
 }
 

@@ -17,6 +17,8 @@ struct ApplicationData
 	Camera* camera;
 	VectorField* field;
 	float lastMouseX, lastMouseY;
+	int particleCount = 100;
+	float partileLifetime = 2.0f;
 	bool mouseHeld = false;
 	bool newField = false;
 	bool keyStatus[6];

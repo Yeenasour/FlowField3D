@@ -15,21 +15,24 @@ struct Particle
 {
 	glm::vec3 pos;
 	glm::vec3 vel;
-	float lifetime;
+	float age;
 };
 
 class ParticleSystem : public Renderable
 {
 private:
 	unsigned int n;
+	float maxLifetime;
 	std::vector<Particle> particles;
 	float randf();
 	glm::vec3 generateRandomPosition();
 	void initParticles();
 public:
-	ParticleSystem(unsigned int n);
+	ParticleSystem(unsigned int n, float t);
 	~ParticleSystem();
 	void update(const VectorField& field, float dt);
+	void setParticleCount(int count);
+	void setLifetime(float t);
 	unsigned int getCount() const;
 };
 

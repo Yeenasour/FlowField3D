@@ -2,7 +2,7 @@
 
 int main()
 {
-	FlowFieldApp app = FlowFieldApp();
+	FlowFieldApp app;
 	app.run();
 	app.shutdown();
 	return 0;
